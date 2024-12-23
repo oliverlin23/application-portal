@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -19,16 +19,7 @@ export default function ApplicationForm() {
   const { register, handleSubmit, setValue } = useForm<FormData>()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/signin')
-    } else if (status === 'authenticated' && session.user) {
-      // Fetch existing application data if available
-      fetchApplicationData()
-    }
-  }, [status, session, router])
-
-  const fetchApplicationData = async () => {
+  const fetchApplicationData = useCallback(async () => {
     const response = await fetch('/api/application')
     if (response.ok) {
       const data = await response.json()
@@ -36,7 +27,15 @@ export default function ApplicationForm() {
         setValue(key as keyof FormData, data[key])
       })
     }
-  }
+  }, [setValue])
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/signin')
+    } else if (status === 'authenticated' && session.user) {
+      fetchApplicationData()
+    }
+  }, [status, session, router, fetchApplicationData])
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
