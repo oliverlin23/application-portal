@@ -1,21 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from './providers'
+import { Navbar } from "@/components/navbar"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Summer Debate Program",
-  description: "Application portal for the Summer Debate Program",
+  title: "Yale Summer Debate Program",
+  description: "Application portal for the Yale Summer Debate Program",
 };
 
 export default function RootLayout({
@@ -26,13 +21,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body 
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white`}
+        className={inter.className} 
       >
         <Providers>
-          <main className="max-w-7xl mx-auto">
-            {children}
+          <Navbar />
+          <main className="min-h-screen mx-auto">
+            {children}  
           </main>
-        </Providers>
+        </Providers> 
       </body>
     </html>
   );
