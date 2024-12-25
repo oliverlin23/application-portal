@@ -1,30 +1,50 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql" // or "mysql" or "sqlite"
+  url      = env("DATABASE_URL")
+}
+
 model User {
-  id            String       @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String       @unique
+  email         String    @unique
   password      String
-  application   Application?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  applications  Application[]
+  contactInformation contactInformation?
+}
+
+model contactInformation {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id])
+  name        String
+  email       String
+  parentEmail String
+  phoneNumber String
+  address     String
+  city        String
+  state       String
+  zipCode     String
+  lab         String?
+  country     String
+  school      String
+  gradeLevel  String
 }
 
 model Application {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  name        String
-  email       String
-  school      String
-  gradeLevel  String
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
   experience  String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
