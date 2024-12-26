@@ -40,6 +40,7 @@ export default function SignIn() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setError('')
+    console.log(values)
 
     const result = await signIn('credentials', {
       redirect: false,
@@ -96,7 +97,6 @@ export default function SignIn() {
                   </FormItem>
                 )}
               />
-              <div className="flex justify-center"></div>
               <Button 
                 type="submit" 
                 className="rounded-full w-full bg-blue-500 hover:bg-blue-600 text-white" 
@@ -106,12 +106,12 @@ export default function SignIn() {
               </Button>
             </form>
           </Form>
-            <div className="flex w-full items-center gap-4 px-8 py-2">
+          <div className="flex w-full items-center gap-4 px-8 py-2">
             <div className="h-px flex-1 bg-gray-400"></div>
             <span className="text-gray-600">or</span>
             <div className="h-px flex-1 bg-gray-400"></div>
-            </div>
-            <GoogleSignInButton>Sign in with Google</GoogleSignInButton>
+          </div>
+          <GoogleSignInButton>Sign in with Google</GoogleSignInButton>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-gray-600">

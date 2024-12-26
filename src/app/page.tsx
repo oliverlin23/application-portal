@@ -27,8 +27,8 @@ export default async function Home() {
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
           {session?.user ? (
-            <Button asChild className="w-full">
-              <Link href="/application">Start Application</Link>
+            <Button asChild className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+              <Link href="/dashboard/application">Start Application</Link>
             </Button>
           ) : (
             <>

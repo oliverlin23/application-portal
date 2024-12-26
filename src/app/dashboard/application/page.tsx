@@ -71,7 +71,6 @@ export default function ApplicationForm() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4">Summer Debate Program Application</h1>
-      <p className="mb-4">User ID: {session?.user?.id}</p>
       <form onSubmit={handleSubmit(onSubmit)} className="max-w-lg">
         <div className="mb-4">
           <label htmlFor="name" className="block mb-2">Name</label>
@@ -108,6 +107,7 @@ export default function ApplicationForm() {
             className="w-full px-3 py-2 border rounded"
           >
             <option value="">Select Grade Level</option>
+            <option value="6">Middle School</option>
             <option value="9">9th Grade</option>
             <option value="10">10th Grade</option>
             <option value="11">11th Grade</option>
