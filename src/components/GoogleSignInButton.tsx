@@ -1,10 +1,11 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { signIn } from "next-auth/react"
 
 export function GoogleSignInButton({ children }: { children: React.ReactNode }) {
   const loginWithGoogle = () => {
-    console.log("Login with Google")
+    signIn("google", { callbackUrl: "/dashboard" })
   }
 
   return (
