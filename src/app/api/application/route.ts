@@ -32,22 +32,44 @@ export async function POST(req: Request) {
   }
 
   try {
-    const data = await req.json()
+    const data = await req.json();
+    console.log('Parsed request body:', data);
+
+    // Validate payload
+    const { name, email, school, gradeLevel, experience } = data;
+    if (!name || !email || !school || !gradeLevel || !experience) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Log payload before sending to Prisma
+    console.log('Payload being sent to Prisma:', { name, email, school, gradeLevel, experience });
+
+    
     const application = await prisma.application.upsert({
       where: {
         userId: session.user.id,
       },
-      update: data,
+      update: { name, email, school, gradeLevel, experience },
       create: {
-        ...data,
         userId: session.user.id,
+        name, 
+        email,
+        school,
+        gradeLevel,
+        experience,
       },
     })
 
     return NextResponse.json(application)
   } catch (error) {
-    console.error('Error saving application:', error)
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    console.error('Error saving application:', error);
+    return NextResponse.json(
+      {
+        error: 'Internal Server Error',
+        details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined,
+      },
+      { status: 500 }
+    );
   }
 }
 

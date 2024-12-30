@@ -48,13 +48,12 @@ export default function ApplicationForm() {
         body: JSON.stringify(data),
       })
       if (response.ok) {
-        alert('Application saved successfully!')
+        console.log('Application saved successfully!')
       } else {
         throw new Error('Failed to save application')
       }
     } catch (error) {
       console.error('Error saving application:', error)
-      alert('Failed to save application. Please try again.')
     } finally {
       setIsSubmitting(false)
     }

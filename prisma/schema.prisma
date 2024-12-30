@@ -29,6 +29,10 @@ model Profile {
 model Application {
     id         String   @id @default(cuid())
     userId     String   @unique
+    name       String
+    email      String
+    school     String
+    gradeLevel String
     experience String
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt

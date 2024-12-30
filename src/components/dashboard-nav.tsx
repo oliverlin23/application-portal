@@ -12,7 +12,7 @@ export function DashboardNav({ className, ...props }: React.HTMLAttributes<HTMLE
   return (
     <nav
       className={cn(
-        "flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1 pt-8",
+        "flex flex-col space-y-1 lg:pt-8",
         className
       )}
       {...props}
