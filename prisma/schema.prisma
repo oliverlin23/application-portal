@@ -26,17 +26,27 @@ model Profile {
     user        User     @relation(fields: [userId], references: [id])
 }
 
+enum ApplicationStatus {
+    NOT_STARTED
+    IN_PROGRESS
+    SUBMITTED
+    ACCEPTED
+    WAITLISTED
+    DENIED
+}
+
 model Application {
-    id         String   @id @default(cuid())
-    userId     String   @unique
+    id         String            @id @default(cuid())
+    userId     String            @unique
     name       String
     email      String
     school     String
     gradeLevel String
     experience String
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-    user       User     @relation(fields: [userId], references: [id])
+    status     ApplicationStatus @default(NOT_STARTED)
+    createdAt  DateTime          @default(now())
+    updatedAt  DateTime          @updatedAt
+    user       User              @relation(fields: [userId], references: [id])
 }
 
 model Account {

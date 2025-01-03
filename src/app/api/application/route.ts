@@ -49,14 +49,10 @@ export async function POST(req: Request) {
       where: {
         userId: session.user.id,
       },
-      update: { name, email, school, gradeLevel, experience },
+      update: data,
       create: {
         userId: session.user.id,
-        name, 
-        email,
-        school,
-        gradeLevel,
-        experience,
+        ...data,
       },
     })
 

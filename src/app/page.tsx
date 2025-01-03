@@ -1,52 +1,86 @@
-import Link from 'next/link'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from './api/auth/[...nextauth]/route'
-import { Layout } from '@/components/layout'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
-export default async function Home() {
-  const session = await getServerSession(authOptions)
-
+export default function HomePage() {
   return (
-    <Layout>
-      <Card>
-        <CardHeader>
-          <CardTitle>Yale Summer Debate Program</CardTitle>
-          <CardDescription>Application Portal</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {session?.user ? (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold">Welcome, {session.user.name || 'User'}!</h2>
-              <p>Ready to start your application? Click the button below to begin.</p>
-            </div>
-          ) : (
-            <p>Please sign in to access your application.</p>
-          )}
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-2">
-          {session?.user ? (
-            <Button asChild className="rounded-full w-full bg-blue-500 hover:bg-blue-600 text-white">
-              <Link href="/dashboard">Dashboard</Link>
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold mb-6">Yale Summer Debate Program</h1>
+        
+        <div className="flex justify-center mb-8">
+          <Link href="/dashboard/application">
+            <Button size="lg" className="bg-primary hover:bg-primary/90">
+              Apply Now
             </Button>
-          ) : (
-            <>
-              <Button asChild className="rounded-full w-full bg-blue-500 hover:bg-blue-600 text-white">
-                <Link href="/signin">Sign In</Link>
-              </Button>
-              <div className="h-1"></div>
-              <p className="text-sm text-center text-gray-600">
-                Don&apos;t have an account?{' '}
-                <Link href="/signup" className="text-blue-500 hover:underline">
-                  Sign up
-                </Link>
-              </p>
-            </>
-          )}
-        </CardFooter>
-      </Card>
-    </Layout>
+          </Link>
+        </div>
+
+        <p className="text-lg mb-8">
+          Improve your public speaking and argumentation skills, learn about current events and national debates, 
+          and have a lot of fun with the Yale Summer Debate Program (YSDP)! You will learn from Yale coaches 
+          and work closely with other high school debaters.
+        </p>
+
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Program Timing</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Monday, August 19 through Friday, August 23, 2024</p>
+              <p>Daily: 10:00 AM - 4:00 PM</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Cost</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>$599 per student</p>
+              <p className="text-green-600">Financial aid available</p>
+              <p className="text-sm mt-2">Free for New Haven Public Schools UDL participants</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Eligibility</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc list-inside space-y-2">
+                <li>Open to all middle and high school students</li>
+                <li>No prior debate experience required</li>
+                <li>Multiple skill levels available</li>
+                <li>Self-provided transportation required</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Important Dates</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <p className="font-semibold">Application Deadline: June 1, 2024</p>
+                <p className="text-red-600">Rolling admissions - Apply early!</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="bg-muted p-6 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4">Questions?</h2>
+          <ul className="space-y-2">
+            <li>Visit our website: <a href="https://ynhudl.com" className="text-blue-600 hover:underline">ynhudl.com</a></li>
+            <li>Check our <a href="https://tinyurl.com/udlsummerfaqs" className="text-blue-600 hover:underline">FAQs</a></li>
+            <li>Email: <a href="mailto:yalesummerdebateprogram@gmail.com" className="text-blue-600 hover:underline">yalesummerdebateprogram@gmail.com</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
   )
 }
 

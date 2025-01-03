@@ -23,10 +23,11 @@ export function Navbar() {
             {session ? (
               <>
                 <Link href="/dashboard">
-                  <Button variant="ghost">Dashboard</Button>
+                  <Button variant="ghost" className="rounded-full hover:bg-blue-500 hover:text-white">Dashboard</Button>
                 </Link>
                 <Button 
-                  variant="ghost" 
+                  variant="ghost"
+                  className="rounded-full hover:bg-red-500 hover:text-white"
                   onClick={() => signOut()}
                 >
                   Sign Out

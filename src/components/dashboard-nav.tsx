@@ -22,9 +22,9 @@ export function DashboardNav({ className, ...props }: React.HTMLAttributes<HTMLE
         className={cn(
           buttonVariants({ variant: "ghost" }),
           pathname === "/dashboard"
-            ? "bg-gray-300 hover:bg-gray-200 hover:underline hover:underline-offset-4"
+            ? "bg-gray-300 hover:bg-gray-200 hover:underline hover:text-foreground hover:underline-offset-4"
             : "hover:bg-gray-200 hover:text-foreground hover:underline hover:underline-offset-4",
-          "justify-start"
+            "justify-start" 
         )}
       >
         <LayoutDashboard className="mr-2 h-4 w-4" />
@@ -35,7 +35,7 @@ export function DashboardNav({ className, ...props }: React.HTMLAttributes<HTMLE
         className={cn(
           buttonVariants({ variant: "ghost" }),
           pathname === "/dashboard/application"
-            ? "bg-gray-300 hover:bg-gray-200 hover:underline hover:underline-offset-4"
+            ? "bg-gray-300 hover:bg-gray-200 hover:text-foreground hover:underline hover:underline-offset-4"
             : "hover:bg-gray-200 hover:text-foreground hover:underline hover:underline-offset-4",
           "justify-start"
         )}
@@ -48,7 +48,7 @@ export function DashboardNav({ className, ...props }: React.HTMLAttributes<HTMLE
         className={cn(
           buttonVariants({ variant: "ghost" }),
           pathname === "/dashboard/profile"
-            ? "bg-gray-300 hover:bg-gray-200 hover:underline hover:underline-offset-4"
+            ? "bg-gray-300 hover:bg-gray-200 hover:underline hover:underline-offset-4 hover:text-foreground"
             : "hover:bg-gray-200 hover:text-foreground hover:underline hover:underline-offset-4",
           "justify-start"
         )}
