@@ -31,8 +31,6 @@ model User {
     name              String?
     email             String?       @unique
     password          String?
-    emailVerified     DateTime?
-    verificationToken String?
     resetToken        String?
     resetTokenExpires DateTime?
     profile           Profile?

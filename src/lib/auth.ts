@@ -32,10 +32,6 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Invalid credentials')
         }
 
-        if (!user.emailVerified) {
-          throw new Error('Please verify your email before signing in')
-        }
-
         if (!user.password) {
           throw new Error('Invalid credentials')
         }

@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
-import { sendVerificationEmail } from '@/lib/mail'
 
 export async function POST(req: Request) {
   try {
@@ -29,8 +28,6 @@ export async function POST(req: Request) {
         message: 'Email already registered'
       }, { status: 400 })
     }
-
-    const verificationToken = crypto.randomBytes(32).toString('hex')
     const hashedPassword = await bcrypt.hash(password, 10)
 
     // Create user with profile
@@ -39,8 +36,6 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
-        verificationToken,
-        emailVerified: null,
         profile: {
           create: {
             name: name || '',
@@ -60,25 +55,9 @@ export async function POST(req: Request) {
       },
     })
 
-    // Send verification email
-    try {
-      await sendVerificationEmail(email, verificationToken)
-      console.log('Verification email sent successfully')
-    } catch (emailError) {
-      console.error('Failed to send verification email:', emailError)
-      // Optionally delete the created user if email fails
-      await prisma.user.delete({
-        where: { email }
-      })
-      return NextResponse.json({
-        success: false,
-        message: 'Failed to send verification email. Please try again.'
-      }, { status: 500 })
-    }
-
     return NextResponse.json({
       success: true,
-      message: 'Please check your email to verify your account'
+      message: 'Account created successfully'
     })
 
   } catch (error) {
