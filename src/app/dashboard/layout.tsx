@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import { getServerSession } from 'next-auth/next'
 import { redirect } from 'next/navigation'
-import { authOptions } from '../api/auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth'
 import { DashboardNav } from "@/components/dashboard-nav"
 
 export const metadata: Metadata = {

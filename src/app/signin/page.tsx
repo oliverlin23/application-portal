@@ -20,7 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { GoogleSignInButton } from "@/components/GoogleSignInButton"
+
 const formSchema = z.object({
   email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
   password: z.string().min(1, "Password is required").min(8, "Password must be at least 8 characters"),
@@ -106,18 +106,18 @@ export default function SignIn() {
               </Button>
             </form>
           </Form>
-          <div className="flex w-full items-center gap-4 px-8 py-2">
-            <div className="h-px flex-1 bg-gray-400"></div>
-            <span className="text-gray-600">or</span>
-            <div className="h-px flex-1 bg-gray-400"></div>
-          </div>
-          <GoogleSignInButton>Sign in with Google</GoogleSignInButton>
         </CardContent>
-        <CardFooter className="flex justify-center">
+        <CardFooter className="flex flex-col space-y-2">
           <p className="text-sm text-gray-600">
             Don&apos;t have an account?{' '}
             <Link href="/signup" className="text-blue-600 hover:underline">
               Sign up
+            </Link>
+          </p>
+          <p className="text-sm text-gray-600">
+            Forgot your password?{' '}
+            <Link href="/forgot-password" className="text-blue-600 hover:underline">
+              Reset it here
             </Link>
           </p>
         </CardFooter>

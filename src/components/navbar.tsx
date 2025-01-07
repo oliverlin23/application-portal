@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
+import { LogOut } from "lucide-react"
 
 export function Navbar() {
   const { data: session } = useSession()
@@ -26,10 +27,11 @@ export function Navbar() {
                   <Button variant="ghost" className="rounded-full hover:bg-blue-500 hover:text-white">Dashboard</Button>
                 </Link>
                 <Button 
-                  variant="ghost"
-                  className="rounded-full hover:bg-red-500 hover:text-white"
                   onClick={() => signOut()}
+                  variant="ghost"
+                  className="rounded-full hover:bg-destructive hover:text-destructive-foreground"
                 >
+                  <LogOut className="h-4 w-4" />
                   Sign Out
                 </Button>
               </>

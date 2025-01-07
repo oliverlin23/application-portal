@@ -55,8 +55,6 @@ The following environment variables are required:
 
 - `DATABASE_URL`: PostgreSQL connection string
 - `NEXTAUTH_SECRET`: Secret for NextAuth.js
-- `GOOGLE_CLIENT_ID`: Google OAuth client ID
-- `GOOGLE_CLIENT_SECRET`: Google OAuth client secret
 
 ## Tech Stack
 

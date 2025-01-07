@@ -8,19 +8,28 @@ export default function HomePage() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-6">Yale Summer Debate Program</h1>
         
+        
+        <p className="text-lg mb-8">
+          Improve your public speaking and argumentation skills, learn about current events and national debates, 
+          and develop your critical thinking skills at the Yale Summer Debate Program (YSDP)! Learn from experienced Yale coaches 
+          and work closely with other high school debaters.
+        </p>
+
+        <p className="text-lg mb-4 text-center">
+          Applications for Summer 2025 are now open!
+        </p>
+
         <div className="flex justify-center mb-8">
           <Link href="/dashboard/application">
-            <Button size="lg" className="bg-primary hover:bg-primary/90">
-              Apply Now
+            <Button 
+              size="lg" 
+              className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg px-8 py-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
+            >
+              Apply Now →
             </Button>
           </Link>
         </div>
 
-        <p className="text-lg mb-8">
-          Improve your public speaking and argumentation skills, learn about current events and national debates, 
-          and have a lot of fun with the Yale Summer Debate Program (YSDP)! You will learn from Yale coaches 
-          and work closely with other high school debaters.
-        </p>
 
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           <Card>
@@ -28,7 +37,7 @@ export default function HomePage() {
               <CardTitle>Program Timing</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>Monday, August 19 through Friday, August 23, 2024</p>
+              <p>Monday, August 19 through Friday, August 23, 2025</p>
               <p>Daily: 10:00 AM - 4:00 PM</p>
             </CardContent>
           </Card>
@@ -39,8 +48,8 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <p>$599 per student</p>
-              <p className="text-green-600">Financial aid available</p>
-              <p className="text-sm mt-2">Free for New Haven Public Schools UDL participants</p>
+              <p className="text-sm text-green-600 mt-4">Financial aid available</p>
+              <p className="text-sm">Free for New Haven Public School UDL participants</p>
             </CardContent>
           </Card>
 
@@ -64,7 +73,7 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <p className="font-semibold">Application Deadline: June 1, 2024</p>
+                <p className="font-semibold">Application Deadline: June 1, 2025</p>
                 <p className="text-red-600">Rolling admissions - Apply early!</p>
               </div>
             </CardContent>
@@ -76,7 +85,7 @@ export default function HomePage() {
           <ul className="space-y-2">
             <li>Visit our website: <a href="https://ynhudl.com" className="text-blue-600 hover:underline">ynhudl.com</a></li>
             <li>Check our <a href="https://tinyurl.com/udlsummerfaqs" className="text-blue-600 hover:underline">FAQs</a></li>
-            <li>Email: <a href="mailto:yalesummerdebateprogram@gmail.com" className="text-blue-600 hover:underline">yalesummerdebateprogram@gmail.com</a></li>
+            <li>Contact us: <a href="mailto:yalesummerdebateprogram@gmail.com" className="text-blue-600 hover:underline">yalesummerdebateprogram@gmail.com</a></li>
           </ul>
         </div>
       </div>

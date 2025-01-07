@@ -51,29 +51,29 @@ export default function ApplicationForm() {
     }
   }, [status, session, router, fetchApplicationData])
 
-  // Auto-save without validation
-  const debouncedSave = useCallback(
-    debounce(async (data: FormData) => {
-      try {
-        await fetch('/api/application', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        })
-      } catch (error) {
-        console.error('Auto-save failed:', error)
-      }
-    }, 1000),
-    []
-  )
+  const debouncedSave = debounce(async (data: FormData) => {
+    try {
+      await fetch('/api/application', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+    } catch (error) {
+      console.error('Auto-save failed:', error)
+    }
+  }, 1000)
+
+  const autoSave = useCallback((data: FormData) => {
+    debouncedSave(data)
+  }, [debouncedSave])
 
   // Watch form changes for auto-save
   useEffect(() => {
     const subscription = watch((data) => {
-      if (data) debouncedSave(data as FormData)
+      if (data) autoSave(data as FormData)
     })
     return () => subscription.unsubscribe()
-  }, [watch, debouncedSave])
+  }, [watch, autoSave])
 
   // Submit with validation
   const onSubmit = async (data: FormData) => {
