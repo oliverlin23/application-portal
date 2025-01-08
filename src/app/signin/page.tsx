@@ -104,13 +104,15 @@ export default function SignIn() {
                   </FormItem>
                 )}
               />
-              <Button 
-                type="submit" 
-                className="rounded-full w-full bg-blue-500 hover:bg-blue-600 text-white" 
-                disabled={form.formState.isSubmitting}
-              >
-                {form.formState.isSubmitting ? 'Signing in...' : 'Sign In'}
-              </Button>
+              <div className="pt-2">
+                <Button 
+                  type="submit" 
+                  className="rounded-full w-full bg-blue-500 hover:bg-blue-600 text-white" 
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? 'Signing in...' : 'Sign In'}
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>
