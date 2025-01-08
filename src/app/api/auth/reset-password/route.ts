@@ -1,41 +1,51 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
+import { sendPasswordResetEmail } from '@/lib/mail'
 
 export async function POST(req: Request) {
   try {
-    const { token, password } = await req.json()
-    
-    const user = await prisma.user.findFirst({
-      where: { 
-        resetToken: token,
-        resetTokenExpires: { gt: new Date() }
-      }
-    })
+    const { email } = await req.json()
 
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Invalid or expired reset token' },
-        { status: 400 }
-      )
+    if (!email) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Email is required' 
+      }, { status: 400 })
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10)
-
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        password: hashedPassword,
-        resetToken: null,
-        resetTokenExpires: null
-      }
+    const user = await prisma.user.findUnique({
+      where: { email }
     })
 
-    return NextResponse.json({ message: 'Password reset successfully' })
+    if (user) {
+      // Generate reset token
+      const resetToken = crypto.randomBytes(32).toString('hex')
+      const resetTokenExpiry = new Date(Date.now() + 3600000) // 1 hour from now
+
+      // Save token to user
+      await prisma.user.update({
+        where: { email },
+        data: {
+          resetToken,
+          resetTokenExpiry
+        }
+      })
+
+      // Send reset email
+      await sendPasswordResetEmail(email, resetToken)
+    }
+
+    // Always return success to prevent email enumeration
+    return NextResponse.json({
+      success: true,
+      message: 'If an account exists, password reset instructions will be sent'
+    })
+
   } catch (error) {
-    console.error('Error in reset password:', error)
+    console.error('Reset password error:', error)
     return NextResponse.json(
-      { error: 'Failed to reset password' },
+      { success: false, message: 'Failed to process request' },
       { status: 500 }
     )
   }

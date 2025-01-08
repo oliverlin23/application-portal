@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Layout } from '@/components/layout'
 import Link from 'next/link'
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -28,6 +28,8 @@ const formSchema = z.object({
 
 export default function SignIn() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const success = searchParams.get('success')
   const [error, setError] = useState('')
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -61,12 +63,17 @@ export default function SignIn() {
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Sign In</CardTitle>
-            <CardDescription className="text-gray-500">Enter your credentials to access your account</CardDescription>
+          <CardDescription>Enter your email and password to sign in</CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
             <Alert variant="destructive" className="mb-4">
               <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          {success && (
+            <Alert className="mb-4">
+              <AlertDescription>{success}</AlertDescription>
             </Alert>
           )}
           <Form {...form}>
@@ -116,7 +123,7 @@ export default function SignIn() {
           </p>
           <p className="text-sm text-gray-600">
             Forgot your password?{' '}
-            <Link href="/forgot-password" className="text-blue-600 hover:underline">
+            <Link href="/reset-password" className="text-blue-600 hover:underline">
               Reset it here
             </Link>
           </p>

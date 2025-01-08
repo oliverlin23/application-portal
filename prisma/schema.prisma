@@ -27,14 +27,14 @@ model Profile {
 }
 
 model User {
-    id                String        @id @default(cuid())
-    name              String?
-    email             String?       @unique
-    password          String?
-    resetToken        String?
-    resetTokenExpires DateTime?
-    profile           Profile?
-    applications      Application[]
+    id               String        @id @default(cuid())
+    name             String?
+    email            String?       @unique
+    password         String?
+    resetToken       String?
+    resetTokenExpiry DateTime?
+    profile          Profile?
+    applications     Application[]
 }
 
 model Application {
