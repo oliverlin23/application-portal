@@ -33,6 +33,7 @@ model User {
     password         String?
     resetToken       String?
     resetTokenExpiry DateTime?
+    isAdmin          Boolean       @default(false)
     profile          Profile?
     applications     Application[]
 }

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
-import Providers from './providers'
+import Providers from '@/components/providers'
 import { Navbar } from "@/components/navbar"
+
 const inter = Inter({
   subsets: ["latin"],
   variable: '--font-inter',
@@ -26,9 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body 
-        className={`${inter.variable} ${sourceSerif.variable} font-sans`}
-      >
+      <body className={`${inter.variable} ${sourceSerif.variable} font-sans`}>
         <Providers>
           <Navbar />
           <main className="min-h-screen mx-auto">
