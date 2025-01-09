@@ -21,6 +21,8 @@ import {
 import { ApplicationStatus } from '@prisma/client'
 import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
+import { StatusBadge, getStatusColor } from "@/components/status-badge"
+import { cn } from "@/lib/utils"
 
 interface Application {
   id: string
@@ -124,16 +126,19 @@ export default function AdminApplications() {
                       value={app.status} 
                       onValueChange={(value) => updateStatus(app.id, value as ApplicationStatus)}
                     >
-                      <SelectTrigger>
-                        <SelectValue />
+                      <SelectTrigger className="border p-2 hover:bg-transparent hover:border-2 hover:border-gray-400 transition-all">
+                        <StatusBadge status={app.status} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="NOT_STARTED">Not Started</SelectItem>
-                        <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                        <SelectItem value="SUBMITTED">Submitted</SelectItem>
-                        <SelectItem value="ACCEPTED">Accepted</SelectItem>
-                        <SelectItem value="WAITLISTED">Waitlisted</SelectItem>
-                        <SelectItem value="DENIED">Denied</SelectItem>
+                        {Object.values(ApplicationStatus).map((status) => (
+                          <SelectItem 
+                            key={status} 
+                            value={status}
+                            className={cn("flex items-center gap-2", getStatusColor(status))}
+                          >
+                            <StatusBadge status={status} />
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </TableCell>

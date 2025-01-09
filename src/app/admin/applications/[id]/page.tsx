@@ -7,6 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ApplicationStatus } from '@prisma/client'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { StatusBadge, getStatusColor } from "@/components/status-badge"
+import { cn } from "@/lib/utils"
+
 interface ApplicationDetail {
   id: string
   name: string
@@ -148,15 +151,20 @@ export default function ApplicationDetail({
               onValueChange={updateStatus}
             >
               <SelectTrigger className="w-[200px]">
-                <SelectValue />
+                <SelectValue>
+                  <StatusBadge status={application.status} />
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="NOT_STARTED">Not Started</SelectItem>
-                <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                <SelectItem value="SUBMITTED">Submitted</SelectItem>
-                <SelectItem value="ACCEPTED">Accepted</SelectItem>
-                <SelectItem value="WAITLISTED">Waitlisted</SelectItem>
-                <SelectItem value="DENIED">Denied</SelectItem>
+                {Object.values(ApplicationStatus).map((status) => (
+                  <SelectItem 
+                    key={status} 
+                    value={status}
+                    className={cn("flex items-center gap-2", getStatusColor(status))}
+                  >
+                    <StatusBadge status={status} />
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </CardContent>

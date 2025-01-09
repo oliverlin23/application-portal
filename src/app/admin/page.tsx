@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ApplicationStatus } from '@prisma/client'
@@ -11,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { StatusBadge } from "@/components/status-badge"
 
 interface DashboardStats {
   totalApplications: number
@@ -99,7 +101,9 @@ export default function AdminDashboard() {
                 <TableRow key={app.id}>
                   <TableCell>{app.name}</TableCell>
                   <TableCell>{app.email}</TableCell>
-                  <TableCell>{app.status}</TableCell>
+                  <TableCell>
+                    <StatusBadge status={app.status} />
+                  </TableCell>
                   <TableCell>{new Date(app.createdAt).toLocaleDateString()}</TableCell>
                 </TableRow>
               ))}
