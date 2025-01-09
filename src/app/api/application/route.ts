@@ -41,18 +41,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Log payload before sending to Prisma
-    console.log('Payload being sent to Prisma:', { name, email, school, gradeLevel, experience });
+    // Get current application to check status
+    const currentApplication = await prisma.application.findUnique({
+      where: { userId: session.user.id }
+    })
 
-    
     const application = await prisma.application.upsert({
       where: {
         userId: session.user.id,
       },
-      update: data,
+      update: {
+        ...data,
+        // Only update to IN_PROGRESS if currently NOT_STARTED
+        status: currentApplication?.status === 'NOT_STARTED' ? 'IN_PROGRESS' : currentApplication?.status
+      },
       create: {
         userId: session.user.id,
         ...data,
+        status: 'IN_PROGRESS'  // New applications start as IN_PROGRESS when created via form
       },
     })
 

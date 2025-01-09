@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     }
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Create user with profile
+    // Create user with profile and application
     await prisma.user.create({
       data: {
         name,
@@ -50,6 +50,16 @@ export async function POST(req: Request) {
             gradeLevel: '',
             forms: [],
           }
+        },
+        applications: {
+          create: {
+            name: name || '',
+            email: email,
+            school: '',
+            gradeLevel: '',
+            experience: '',
+            status: 'NOT_STARTED'
+          }
         }
       },
     })
@@ -60,6 +70,7 @@ export async function POST(req: Request) {
     })
 
   } catch (error) {
+    console.error('Signup error:', error)
     return NextResponse.json({
       success: false,
       message: error instanceof Error ? error.message : 'Failed to create account'
