@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout'
 import Link from 'next/link'
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -28,8 +28,6 @@ const formSchema = z.object({
 
 export default function SignIn() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const success = searchParams.get('success')
   const [error, setError] = useState('')
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,7 +40,6 @@ export default function SignIn() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setError('')
-    console.log(values)
 
     const result = await signIn('credentials', {
       redirect: false,
@@ -69,11 +66,6 @@ export default function SignIn() {
           {error && (
             <Alert variant="destructive" className="mb-4">
               <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          {success && (
-            <Alert className="mb-4">
-              <AlertDescription>{success}</AlertDescription>
             </Alert>
           )}
           <Form {...form}>
