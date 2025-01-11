@@ -31,7 +31,15 @@ const formSchema = z.object({
   path: ["confirmPassword"],
 })
 
-export default function ResetPassword({ params }: { params: { token: string } }) {
+// Define props interface correctly
+interface ResetPasswordProps {
+  params: {
+    token: string
+  }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export default function ResetPassword({ params }: ResetPasswordProps) {
   const router = useRouter()
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
