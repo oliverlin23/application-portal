@@ -73,72 +73,74 @@ export default function ResetPassword({ params }: { params: Promise<{ token: str
   }
 
   return (
-    <div className="container max-w-md mx-auto p-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Reset Password</CardTitle>
-          <CardDescription>Enter your new password</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          {success && (
-            <Alert className="mb-4">
-              <AlertDescription>
-                Password reset successful! Redirecting to login...
-              </AlertDescription>
-            </Alert>
-          )}
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>New Password</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="password" 
-                        {...field} 
-                        placeholder="Enter your new password" 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="password" 
-                        {...field} 
-                        placeholder="Confirm your new password" 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button 
-                type="submit" 
-                className="w-full"
-                disabled={form.formState.isSubmitting}
-              >
-                {form.formState.isSubmitting ? 'Resetting...' : 'Reset Password'}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <Card>
+          <CardHeader>
+            <CardTitle>Reset Password</CardTitle>
+            <CardDescription>Enter your new password</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            {success && (
+              <Alert className="mb-4">
+                <AlertDescription>
+                  Password reset successful! Redirecting to login...
+                </AlertDescription>
+              </Alert>
+            )}
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>New Password</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="password" 
+                          {...field} 
+                          placeholder="Enter your new password" 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm Password</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="password" 
+                          {...field} 
+                          placeholder="Confirm your new password" 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button 
+                  type="submit" 
+                  className="w-full"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? 'Resetting...' : 'Reset Password'}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
