@@ -50,7 +50,15 @@ export default function SignIn() {
     if (result?.error) {
       setError('Invalid email or password')
     } else {
-      router.push('/')
+      // Check if user is admin
+      const response = await fetch('/api/auth/check-admin')
+      const data = await response.json()
+      
+      if (data.isAdmin) {
+        router.push('/admin')
+      } else {
+        router.push('/')
+      }
       router.refresh()
     }
   }
