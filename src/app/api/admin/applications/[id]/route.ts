@@ -11,9 +11,15 @@ interface AdminSession extends Session {
   } & Session['user']
 }
 
+type RouteSegment = {
+  params: {
+    id: string
+  }
+}
+
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: RouteSegment
 ): Promise<NextResponse> {
   try {
     const session = await getServerSession(authOptions)
@@ -22,7 +28,7 @@ export async function GET(
     }
 
     const application = await prisma.application.findUnique({
-      where: { id: params.id },
+      where: { id: context.params.id },
       include: {
         user: {
           select: {
@@ -47,18 +53,17 @@ export async function GET(
 }
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+  request: Request,
+  context: RouteSegment
+): Promise<NextResponse> {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user || !(session as AdminSession).user.isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { status } = await req.json()
+    const { status } = await request.json()
 
-    // Validate status is a valid ApplicationStatus
     if (!Object.values(ApplicationStatus).includes(status)) {
       return NextResponse.json({ 
         error: 'Invalid status value' 
@@ -66,7 +71,7 @@ export async function PATCH(
     }
 
     const application = await prisma.application.update({
-      where: { id: params.id },
+      where: { id: context.params.id },
       data: { status: status as ApplicationStatus }
     })
 
