@@ -12,9 +12,9 @@ interface AdminSession extends Session {
 }
 
 export async function GET(
-  req: Request,
+  request: Request,
   { params }: { params: { id: string } }
-) {
+): Promise<NextResponse> {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user || !(session as AdminSession).user.isAdmin) {
