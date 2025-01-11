@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { use, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -31,17 +31,10 @@ const formSchema = z.object({
   path: ["confirmPassword"],
 })
 
-// Define props interface correctly
-interface ResetPasswordProps {
-  params: {
-    token: string
-  }
-  searchParams: { [key: string]: string | string[] | undefined }
-}
-
-export default function ResetPassword({ params }: ResetPasswordProps) {
+export default function ResetPassword({ params }: { params: Promise<{ token: string }> }) {
   const router = useRouter()
   const [error, setError] = useState('')
+  const { token } = use(params)
   const [success, setSuccess] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -58,7 +51,7 @@ export default function ResetPassword({ params }: ResetPasswordProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          token: params.token,
+          token: token,
           password: values.password,
         }),
       })
