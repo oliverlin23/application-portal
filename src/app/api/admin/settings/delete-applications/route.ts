@@ -10,7 +10,7 @@ interface AdminSession extends Session {
   } & Session['user']
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE() {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user || !(session as AdminSession).user.isAdmin) {
