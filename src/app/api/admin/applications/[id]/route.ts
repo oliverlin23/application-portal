@@ -26,10 +26,10 @@ export async function GET(
       include: {
         user: {
           select: {
-            profile: true
-          }
-        }
-      }
+            profile: true,
+          },
+        },
+      },
     })
 
     if (!application) {
@@ -37,11 +37,10 @@ export async function GET(
     }
 
     return NextResponse.json(application)
-
   } catch (error) {
-    console.error('Application detail error:', error)
+    console.error('Error fetching application:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch application details' },
+      { error: 'Failed to fetch application' },
       { status: 500 }
     )
   }
