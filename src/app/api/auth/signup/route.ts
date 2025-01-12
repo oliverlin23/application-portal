@@ -57,7 +57,11 @@ export async function POST(req: Request) {
             email: email,
             school: '',
             gradeLevel: '',
-            experience: '',
+            yearsOfExperience: '',
+            numTournaments: '',
+            debateExperience: '',
+            interestEssay: '',
+            selfAptitudeAssessment: '',
             status: 'NOT_STARTED'
           }
         }

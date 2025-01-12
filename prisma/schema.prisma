@@ -41,11 +41,16 @@ model User {
 model Application {
     id         String            @id @default(cuid())
     userId     String            @unique
-    name       String
-    email      String
-    school     String
-    gradeLevel String
-    experience String
+    name       String?
+    email      String?
+    school     String?
+    udlStudent Boolean           @default(false)
+    gradeLevel String?
+    yearsOfExperience String?
+    numTournaments String?
+    debateExperience String?
+    interestEssay String?
+    selfAptitudeAssessment String?
     status     ApplicationStatus @default(NOT_STARTED)
     createdAt  DateTime          @default(now())
     updatedAt  DateTime          @updatedAt

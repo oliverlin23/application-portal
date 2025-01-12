@@ -126,7 +126,7 @@ export default function AdminApplications() {
                       value={app.status} 
                       onValueChange={(value) => updateStatus(app.id, value as ApplicationStatus)}
                     >
-                      <SelectTrigger className="border p-2 hover:bg-transparent hover:border-2 hover:border-gray-400 transition-all">
+                      <SelectTrigger className="border p-2 hover:bg-transparent">
                         <StatusBadge status={app.status} />
                       </SelectTrigger>
                       <SelectContent>

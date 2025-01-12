@@ -12,19 +12,17 @@ interface AdminSession extends Session {
 }
 
 export async function GET(
-  request: Request,
-  { params } : { params: Promise<{ id: string }> }
-): Promise<NextResponse> {
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user || !(session as AdminSession).user.isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = await params
-
     const application = await prisma.application.findUnique({
-      where: { id: id },
+      where: { id: params.id },
       include: {
         user: {
           select: {
@@ -40,7 +38,7 @@ export async function GET(
 
     return NextResponse.json(application)
   } catch (error) {
-    console.error('Error fetching application:', error)
+    console.error('Admin application error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch application' },
       { status: 500 }
@@ -49,33 +47,36 @@ export async function GET(
 }
 
 export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<NextResponse> {
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user || !(session as AdminSession).user.isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id } = await params
-    const { status } = await request.json()
+    const body = await req.json()
+    const { status, udlStudent } = body
 
-    if (!Object.values(ApplicationStatus).includes(status)) {
-      return NextResponse.json({ 
-        error: 'Invalid status value' 
-      }, { status: 400 })
-    }
-
-    const application = await prisma.application.update({
-      where: { id },
-      data: { status: status as ApplicationStatus }
+    const updatedApplication = await prisma.application.update({
+      where: { id: params.id },
+      data: {
+        ...(status && { status: status as ApplicationStatus }),
+        ...(udlStudent !== undefined && { udlStudent }),
+      },
+      include: {
+        user: {
+          select: {
+            profile: true,
+          },
+        },
+      },
     })
 
-    return NextResponse.json(application)
-
+    return NextResponse.json(updatedApplication)
   } catch (error) {
-    console.error('Update application error:', error)
+    console.error('Admin application update error:', error)
     return NextResponse.json(
       { error: 'Failed to update application' },
       { status: 500 }

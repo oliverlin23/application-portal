@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { LogOut } from "lucide-react"
+import Image from "next/image"
 
 export function Navbar() {
   const { data: session } = useSession()
@@ -13,10 +14,14 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Left side - Logo/Brand */}
-          <div className="flex-shrink-0">
-            <Link href="/" className="font-bold text-xl">
-              YSDP
-            </Link>
+          <div className="flex-shrink-0 ml-2">
+            <Image 
+              src="/icon.png" 
+              alt="YSDP Logo" 
+              width={32} 
+              height={32} 
+              className="h-8 w-auto"
+            />
           </div>
 
           {/* Right side - Navigation Links */}

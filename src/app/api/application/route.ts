@@ -1,77 +1,88 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { getServerSession } from 'next-auth'
 import { prisma } from '@/lib/prisma'
+import { authOptions } from '@/lib/auth'
+import { ApplicationStatus } from '@prisma/client'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
-
-  if (!session || !session.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const application = await prisma.application.findUnique({
-      where: {
-        userId: session.user.id,
-      },
+      where: { userId: session.user.id },
     })
 
-    return NextResponse.json(application || {})
+    return NextResponse.json(application)
   } catch (error) {
-    console.error('Error fetching application:', error)
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    console.error('Application fetch error:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch application' },
+      { status: 500 }
+    )
   }
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions)
-
-  if (!session || !session.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   try {
-    const data = await req.json();
-    console.log('Parsed request body:', data);
-
-    // Validate payload
-    const { name, email, school, gradeLevel, experience } = data;
-    if (!name || !email || !school || !gradeLevel || !experience) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    const session = await getServerSession(authOptions)
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get current application to check status
-    const currentApplication = await prisma.application.findUnique({
-      where: { userId: session.user.id }
-    })
+    const body = await req.json()
+    const {
+      name,
+      email,
+      school,
+      udlStudent,
+      gradeLevel,
+      yearsOfExperience,
+      numTournaments,
+      debateExperience,
+      interestEssay,
+      selfAptitudeAssessment,
+    } = body
 
     const application = await prisma.application.upsert({
-      where: {
-        userId: session.user.id,
-      },
-      update: {
-        ...data,
-        // Only update to IN_PROGRESS if currently NOT_STARTED
-        status: currentApplication?.status === 'NOT_STARTED' ? 'IN_PROGRESS' : currentApplication?.status
-      },
+      where: { userId: session.user.id },
       create: {
         userId: session.user.id,
-        ...data,
-        status: 'IN_PROGRESS'  // New applications start as IN_PROGRESS when created via form
+        name,
+        email,
+        school,
+        udlStudent,
+        gradeLevel,
+        yearsOfExperience,
+        numTournaments,
+        debateExperience,
+        interestEssay,
+        selfAptitudeAssessment,
+        status: ApplicationStatus.IN_PROGRESS,
+      },
+      update: {
+        name,
+        email,
+        school,
+        udlStudent,
+        gradeLevel,
+        yearsOfExperience,
+        numTournaments,
+        debateExperience,
+        interestEssay,
+        selfAptitudeAssessment,
       },
     })
 
     return NextResponse.json(application)
   } catch (error) {
-    console.error('Error saving application:', error);
+    console.error('Application save error:', error)
     return NextResponse.json(
-      {
-        error: 'Internal Server Error',
-        details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined,
-      },
+      { error: 'Failed to save application' },
       { status: 500 }
-    );
+    )
   }
 }
 
