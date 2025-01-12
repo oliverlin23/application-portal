@@ -13,7 +13,7 @@ interface AdminSession extends Session {
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -21,8 +21,9 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const application = await prisma.application.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: {
@@ -48,7 +49,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -56,11 +57,12 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const body = await req.json()
     const { status, udlStudent } = body
 
     const updatedApplication = await prisma.application.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(status && { status: status as ApplicationStatus }),
         ...(udlStudent !== undefined && { udlStudent }),
