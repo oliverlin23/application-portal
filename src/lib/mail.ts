@@ -121,4 +121,86 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     console.error('Error sending password reset email:', error)
     throw error
   }
+}
+
+export async function sendApplicationNotification(
+  studentEmail: string,
+  parentEmail: string,
+  studentName: string,
+  status: string
+) {
+  const subject = 
+    'Your YSDP Application Has Been Submitted';
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+          }
+          .header {
+            background-color: #00356B;
+            padding: 20px;
+            text-align: center;
+          }
+          .header h1 {
+            color: white;
+            margin: 0;
+            font-size: 24px;
+          }
+          .content {
+            padding: 30px 20px;
+            background-color: #ffffff;
+          }
+          .footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666666;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="email-container">
+          <div class="header">
+            <h1>Yale Summer Debate Program</h1>
+          </div>
+          <div class="content">
+            <h2>${status === 'SUBMITTED' ? 'Application Submitted' : 'Application Saved'}</h2>
+            <p>Dear ${studentName},</p>
+            <p>Your application to the Yale Summer Debate Program has been successfully submitted. We will review your application and get back to you soon.</p>
+            <p>Best regards,<br>YSDP Team</p>
+          </div>
+          <div class="footer">
+            <p>This is an automated message, please do not reply to this email.</p>
+            <p>&copy; ${new Date().getFullYear()} Yale Summer Debate Program. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || '"Yale Summer Debate Program" <noreply@ynhudl.com>',
+    subject,
+    html,
+  };
+
+  try {
+    // Send to both student and parent
+    await Promise.all([
+      // Using your existing email transport
+      transporter.sendMail({ ...mailOptions, to: studentEmail }),
+      transporter.sendMail({ ...mailOptions, to: parentEmail })
+    ]);
+  } catch (error) {
+    console.error('Failed to send application notification:', error);
+  }
 } 

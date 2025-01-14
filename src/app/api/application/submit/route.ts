@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { prisma } from '@/lib/prisma'
 import { authOptions } from '@/lib/auth'
 import { ApplicationStatus } from '@prisma/client'
+import { sendApplicationNotification } from '@/lib/mail'
 
 export async function POST() {
   try {
@@ -13,6 +14,17 @@ export async function POST() {
 
     const application = await prisma.application.findUnique({
       where: { userId: session.user.id },
+      include: {
+        user: {
+          select: {
+            profile: {
+              select: {
+                parentEmail: true
+              }
+            }
+          }
+        }
+      }
     })
 
     if (!application) {
@@ -55,6 +67,14 @@ export async function POST() {
         status: ApplicationStatus.SUBMITTED,
       },
     })
+
+    // Send notification emails
+    await sendApplicationNotification(
+      application.email ?? '',
+      application.user.profile?.parentEmail ?? '',
+      application.name ?? '',
+      ApplicationStatus.SUBMITTED
+    )
 
     return NextResponse.json(updatedApplication)
   } catch (error) {

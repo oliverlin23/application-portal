@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useRouter } from 'next/navigation'
 
 const profileFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -35,6 +36,7 @@ export default function ProfilePage() {
   const [error, setError] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [profile, setProfile] = useState<z.infer<typeof profileFormSchema> | null>(null)
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
@@ -83,6 +85,14 @@ export default function ProfilePage() {
       const updatedProfile = await response.json()
       setProfile(updatedProfile)
       setIsEditing(false)
+
+      const searchParams = new URLSearchParams(window.location.search)
+      const redirect = searchParams.get('redirect')
+      if (redirect) {
+        router.push(`/dashboard/${redirect}`)
+      } else {
+        setIsEditing(false)
+      }
     } catch (error) {
       setError('Failed to update profile. Please try again.')
       console.error('Error updating profile:', error)
@@ -111,7 +121,7 @@ export default function ProfilePage() {
         <CardHeader>
           <CardTitle>Personal Information</CardTitle>
           <CardDescription>
-            {isEditing ? 'Update your personal information here.' : 'Your personal information.'}
+            {isEditing ? 'Update your personal information here. This information will be used to contact you about your application. Remember to save your changes when you are done.' : 'Please complete your personal information before submitting your application.'}
           </CardDescription>
         </CardHeader>
         <CardContent>

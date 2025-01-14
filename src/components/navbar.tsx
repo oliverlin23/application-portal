@@ -15,13 +15,15 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Left side - Logo/Brand */}
           <div className="flex-shrink-0 ml-2">
-            <Image 
-              src="/icon.png" 
-              alt="YSDP Logo" 
-              width={32} 
-              height={32} 
-              className="h-8 w-auto"
-            />
+            <Link href="/">
+              <Image 
+                src="/icon.png" 
+                alt="YSDP Logo" 
+                width={32} 
+                height={32} 
+                className="h-8 w-auto cursor-pointer"
+              />
+            </Link>
           </div>
 
           {/* Right side - Navigation Links */}

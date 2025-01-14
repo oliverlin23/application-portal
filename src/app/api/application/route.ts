@@ -73,6 +73,7 @@ export async function POST(req: Request) {
         debateExperience,
         interestEssay,
         selfAptitudeAssessment,
+        status: ApplicationStatus.IN_PROGRESS,
       },
     })
 

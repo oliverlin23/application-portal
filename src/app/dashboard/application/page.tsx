@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,6 +15,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import debounce from 'lodash/debounce'
+import { AlertCircle } from "lucide-react"
+import { isProfileComplete, type Profile } from '@/lib/utils'
+import { useToast } from "@/hooks/use-toast"
 
 const applicationSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -39,7 +42,67 @@ const applicationSchema = z.object({
 
 type FormData = z.infer<typeof applicationSchema>
 
-export default function ApplicationForm() {
+export default function ApplicationPage() {
+  const router = useRouter()
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function checkProfile() {
+      try {
+        const response = await fetch('/api/profile')
+        const data = await response.json()
+        setProfile(data)
+        
+        if (!isProfileComplete(data)) {
+          router.push('/dashboard/profile?redirect=application')
+        }
+      } catch (error) {
+        console.error('Failed to fetch profile:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    checkProfile()
+  }, [router])
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
+  if (!profile || !isProfileComplete(profile)) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile Required</CardTitle>
+            <CardDescription>
+              Please complete your profile before starting your application.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Alert>
+              <AlertDescription>
+                Your profile information is required before you can access the application.
+              </AlertDescription>
+            </Alert>
+            <Button 
+              onClick={() => router.push('/dashboard/profile?redirect=application')}
+              className="mt-4"
+            >
+              Complete Profile
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  return <ApplicationForm />
+}
+
+function ApplicationForm() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const { register, handleSubmit, setValue, watch } = useForm<FormData>({
@@ -59,11 +122,17 @@ export default function ApplicationForm() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [showSubmitAlert, setShowSubmitAlert] = useState(false)
+  const [application, setApplication] = useState<{ status?: string } | null>(null)
+  const { toast } = useToast()
+
+  const isSubmitted = application?.status === 'SUBMITTED'
 
   const fetchApplicationData = useCallback(async () => {
     const response = await fetch('/api/application')
     if (response.ok) {
       const data = await response.json()
+      setApplication(data)
       Object.keys(data).forEach((key) => {
         setValue(key as keyof FormData, data[key])
       })
@@ -108,9 +177,7 @@ export default function ApplicationForm() {
     setSubmitError('')
 
     try {
-      // Validate data
       const validatedData = applicationSchema.parse(data)
-
       const response = await fetch('/api/application/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -122,12 +189,29 @@ export default function ApplicationForm() {
         throw new Error(errorData.error || 'Failed to submit application')
       }
 
+      toast({
+        title: "Success!",
+        description: "Your application has been submitted successfully. You will receive a confirmation email shortly.",
+        variant: "default",
+      })
+
       router.refresh()
       router.push('/dashboard')
     } catch (error) {
       if (error instanceof z.ZodError) {
-        setSubmitError(error.errors.map(e => e.message).join('. '))
+        const errorMessage = error.errors.map(e => e.message).join('. ')
+        toast({
+          title: "Validation Error",
+          description: errorMessage,
+          variant: "destructive",
+        })
+        setSubmitError(errorMessage)
       } else {
+        toast({
+          title: "Error",
+          description: (error as Error).message || "Failed to submit application",
+          variant: "destructive",
+        })
         setSubmitError((error as Error).message)
       }
     } finally {
@@ -146,7 +230,7 @@ export default function ApplicationForm() {
             <CardTitle>Summer Debate Program Application</CardTitle>
             <CardDescription>
               Please fill out all fields below. Your application will be automatically saved as you type. 
-              Once you&apos;ve completed all sections, click the submit button at the bottom.
+              Once you&apos;ve completed all of the sections, click the submit button at the bottom.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -168,17 +252,21 @@ export default function ApplicationForm() {
             <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="name">Name</Label>
-                <Input id="name" {...register('name')} />
+                <Input
+                  id="name"
+                  {...register('name')}
+                  disabled={isSubmitted}
+                />
               </div>
 
               <div>
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" {...register('email')} />
+                <Input id="email" type="email" {...register('email')} disabled={isSubmitted} />
               </div>
 
               <div>
                 <Label htmlFor="school">School</Label>
-                <Input id="school" {...register('school')} />
+                <Input id="school" {...register('school')} disabled={isSubmitted} />
               </div>
 
               <div className="flex items-center space-x-2">
@@ -188,6 +276,7 @@ export default function ApplicationForm() {
                   onCheckedChange={(checked: boolean) => {
                     setValue('udlStudent', checked)
                   }}
+                  disabled={isSubmitted}
                 />
                 <Label htmlFor="udlStudent">I am a New Haven UDL student</Label>
               </div>
@@ -197,6 +286,7 @@ export default function ApplicationForm() {
                 <Select
                   onValueChange={value => setValue('gradeLevel', value)}
                   value={watch('gradeLevel') || ''}
+                  disabled={isSubmitted}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Grade Level" />
@@ -226,6 +316,7 @@ export default function ApplicationForm() {
                 <Select
                   onValueChange={value => setValue('yearsOfExperience', value)}
                   value={watch('yearsOfExperience') || ''}
+                  disabled={isSubmitted}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Years of Experience" />
@@ -245,6 +336,7 @@ export default function ApplicationForm() {
                 <Select
                   onValueChange={value => setValue('numTournaments', value)}
                   value={watch('numTournaments') || ''}
+                  disabled={isSubmitted}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Number of Tournaments" />
@@ -270,6 +362,7 @@ export default function ApplicationForm() {
                   {...register('debateExperience')}
                   rows={4}
                   placeholder="Describe your debate experience, including formats, achievements, and areas of focus"
+                  disabled={isSubmitted}
                 />
               </div>
             </CardContent>
@@ -279,7 +372,7 @@ export default function ApplicationForm() {
             <CardHeader>
               <CardTitle>Program Interest & Self-Assessment</CardTitle>
               <CardDescription>
-                Share why you want to join the program and assess your current abilities.
+                Share why you want to join the program and help us understand your current debate skills.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -295,12 +388,13 @@ export default function ApplicationForm() {
                   {...register('interestEssay')}
                   rows={4}
                   placeholder="Explain your motivation for joining the program and what you hope to achieve"
+                  disabled={isSubmitted}
                 />
               </div>
 
               <div>
                 <Label htmlFor="selfAptitudeAssessment">
-                  Self Assessment
+                  Please provide a self-assessment of your current debate skills, strengths, and areas for improvement.
                   <span className="text-sm text-muted-foreground ml-2">
                     (minimum 50 characters)
                   </span>
@@ -310,6 +404,7 @@ export default function ApplicationForm() {
                   {...register('selfAptitudeAssessment')}
                   rows={4}
                   placeholder="Evaluate your current debate skills, strengths, and areas for improvement"
+                  disabled={isSubmitted}
                 />
               </div>
             </CardContent>
@@ -317,13 +412,37 @@ export default function ApplicationForm() {
 
           <Card>
             <CardContent className="pt-6">
-              <Button
-                onClick={handleSubmit(onSubmit)}
-                disabled={isSubmitting}
-                className="w-full"
-              >
-                {isSubmitting ? 'Submitting...' : 'Submit Application'}
-              </Button>
+              {application?.status === 'SUBMITTED' ? (
+                <Alert className="mt-4">
+                  <AlertDescription>
+                    Your application has been submitted and can no longer be edited.
+                  </AlertDescription>
+                </Alert>
+              ) : showSubmitAlert ? (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Warning</AlertTitle>
+                  <AlertDescription>
+                    Are you sure you want to submit? This action cannot be undone.
+                  </AlertDescription>
+                  <div className="mt-4 flex justify-end space-x-4">
+                    <Button variant="outline" onClick={() => setShowSubmitAlert(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
+                      Confirm Submit
+                    </Button>
+                  </div>
+                </Alert>
+              ) : (
+                <Button
+                  onClick={() => setShowSubmitAlert(true)}
+                  disabled={isSubmitting}
+                  className="w-full"
+                >
+                  Submit Application
+                </Button>
+              )}
             </CardContent>
           </Card>
         </form>
