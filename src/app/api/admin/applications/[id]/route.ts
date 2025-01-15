@@ -50,8 +50,9 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.isAdmin) {
@@ -62,7 +63,7 @@ export async function PATCH(
     const { status, udlStudent } = body as { status?: ApplicationStatus, udlStudent?: boolean }
 
     const application = await prisma.application.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         user: {
           select: {
@@ -81,7 +82,7 @@ export async function PATCH(
     }
 
     const updatedApplication = await prisma.application.update({
-      where: { id: params.id },
+      where: { id: id },
       data: { 
         ...(status && { status }),
         ...(udlStudent !== undefined && { udlStudent })
