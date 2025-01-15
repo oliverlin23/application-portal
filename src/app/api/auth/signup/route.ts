@@ -1,20 +1,10 @@
 import { NextResponse } from 'next/server'
+import { hash } from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
-import bcrypt from 'bcryptjs'
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
-    
-    // Validate input
-    if (!body || !body.email || !body.password) {
-      return NextResponse.json({
-        success: false,
-        message: 'Missing required fields'
-      }, { status: 400 })
-    }
-
-    const { name, email, password } = body
+    const { email, password } = await req.json()
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
@@ -22,22 +12,26 @@ export async function POST(req: Request) {
     })
 
     if (existingUser) {
-      return NextResponse.json({
-        success: false,
-        message: 'Email already registered'
-      }, { status: 400 })
+      return NextResponse.json(
+        { error: 'User already exists' },
+        { status: 400 }
+      )
     }
-    const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Create user with profile and application
-    await prisma.user.create({
+    const hashedPassword = await hash(password, 10)
+
+    const user = await prisma.user.create({
       data: {
-        name,
         email,
         password: hashedPassword,
+        applications: {
+          create: {
+            status: 'IN_PROGRESS'
+          }
+        },
         profile: {
           create: {
-            name: name || '',
+            name: '',
             email: email,
             parentEmail: '',
             phoneNumber: '',
@@ -48,37 +42,28 @@ export async function POST(req: Request) {
             country: '',
             school: '',
             gradeLevel: '',
-            forms: [],
-          }
-        },
-        applications: {
-          create: {
-            name: name || '',
-            email: email,
-            school: '',
-            gradeLevel: '',
-            yearsOfExperience: '',
-            numTournaments: '',
-            debateExperience: '',
-            interestEssay: '',
-            selfAptitudeAssessment: '',
-            status: 'NOT_STARTED'
+            forms: []
           }
         }
+      }
+    })
+
+    return NextResponse.json(
+      { 
+        message: 'User created successfully',
+        user: {
+          id: user.id,
+          email: user.email
+        }
       },
-    })
-
-    return NextResponse.json({
-      success: true,
-      message: 'Account created successfully'
-    })
-
+      { status: 201 }
+    )
   } catch (error) {
     console.error('Signup error:', error)
-    return NextResponse.json({
-      success: false,
-      message: error instanceof Error ? error.message : 'Failed to create account'
-    }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Failed to create user' },
+      { status: 500 }
+    )
   }
 }
 

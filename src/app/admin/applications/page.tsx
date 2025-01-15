@@ -95,12 +95,12 @@ export default function AdminApplications() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">All Status</SelectItem>
-                <SelectItem value="NOT_STARTED">Not Started</SelectItem>
                 <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
                 <SelectItem value="SUBMITTED">Submitted</SelectItem>
                 <SelectItem value="ACCEPTED">Accepted</SelectItem>
                 <SelectItem value="WAITLISTED">Waitlisted</SelectItem>
                 <SelectItem value="DENIED">Denied</SelectItem>
+                <SelectItem value="WITHDRAWN">Withdrawn</SelectItem>
               </SelectContent>
             </Select>
           </form>

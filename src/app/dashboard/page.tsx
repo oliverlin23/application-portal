@@ -25,15 +25,15 @@ export default async function DashboardPage() {
   })
 
   const statusColors = {
-    NOT_STARTED: "text-black-500",
     IN_PROGRESS: "text-yellow-500",
     SUBMITTED: "text-blue-500",
     ACCEPTED: "text-green-500",
     WAITLISTED: "text-orange-500",
-    DENIED: "text-red-500"
+    DENIED: "text-red-500",
+    WITHDRAWN: "text-gray-500"
   }
 
-  const statusText = application?.status || "NOT_STARTED"
+  const statusText = application?.status || "IN_PROGRESS"
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">

@@ -2,6 +2,8 @@
 
 A full-stack application portal built with Next.js 13+, featuring student applications, admin management, and automated workflows.
 
+Live link: https://ysdp-portal.vercel.app/
+
 ## Features
 
 ### Student Features

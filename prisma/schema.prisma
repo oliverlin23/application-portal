@@ -35,7 +35,7 @@ model User {
     resetTokenExpiry DateTime?
     isAdmin          Boolean       @default(false)
     profile          Profile?
-    applications     Application[]
+    applications      Application[]
 }
 
 model Application {
@@ -51,17 +51,17 @@ model Application {
     debateExperience String?
     interestEssay String?
     selfAptitudeAssessment String?
-    status     ApplicationStatus @default(NOT_STARTED)
+    status     ApplicationStatus @default(IN_PROGRESS)
     createdAt  DateTime          @default(now())
     updatedAt  DateTime          @updatedAt
     user       User              @relation(fields: [userId], references: [id])
 }
 
 enum ApplicationStatus {
-    NOT_STARTED
     IN_PROGRESS
     SUBMITTED
     ACCEPTED
     WAITLISTED
     DENIED
+    WITHDRAWN
 }
