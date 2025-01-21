@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
 import { StatusBadge, getStatusColor } from "@/components/status-badge"
 import { cn } from "@/lib/utils"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface Application {
   id: string
@@ -30,6 +31,25 @@ interface Application {
   email: string
   school: string
   status: ApplicationStatus
+}
+
+const StatusCounts = ({ counts }: { counts: Record<ApplicationStatus, number> }) => {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      {Object.entries(counts).map(([status, count]) => (
+        <Card key={status}>
+          <CardHeader className="py-4">
+            <CardTitle className="text-sm font-medium">
+              <StatusBadge status={status as ApplicationStatus} />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{count}</div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
 }
 
 export default function AdminApplications() {
@@ -44,7 +64,7 @@ export default function AdminApplications() {
     setSearchQuery(inputValue)
   }
 
-  const { data: applications, isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['applications', searchQuery, status],
     queryFn: async () => {
       const res = await fetch(`/api/admin/applications?search=${searchQuery}&status=${status}`)
@@ -64,7 +84,6 @@ export default function AdminApplications() {
       
       // Invalidate relevant queries
       await queryClient.invalidateQueries({ queryKey: ['applications'] })
-      await queryClient.invalidateQueries({ queryKey: ['adminStats'] })
       await queryClient.invalidateQueries({ 
         queryKey: ['application', applicationId] 
       })
@@ -75,6 +94,7 @@ export default function AdminApplications() {
 
   return (
     <div className="space-y-4">
+      {!isLoading && data?.counts && <StatusCounts counts={data.counts} />}
       {isLoading ? (
         <div>Loading applications...</div>
       ) : (
@@ -95,12 +115,11 @@ export default function AdminApplications() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">All Status</SelectItem>
-                <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                <SelectItem value="SUBMITTED">Submitted</SelectItem>
-                <SelectItem value="ACCEPTED">Accepted</SelectItem>
-                <SelectItem value="WAITLISTED">Waitlisted</SelectItem>
-                <SelectItem value="DENIED">Denied</SelectItem>
-                <SelectItem value="WITHDRAWN">Withdrawn</SelectItem>
+                {Object.values(ApplicationStatus).map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </form>
@@ -116,7 +135,7 @@ export default function AdminApplications() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {applications?.map((app: Application) => (
+              {data?.applications?.map((app: Application) => (
                 <TableRow key={app.id}>
                   <TableCell>{app.name}</TableCell>
                   <TableCell>{app.email}</TableCell>

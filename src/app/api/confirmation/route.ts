@@ -39,19 +39,25 @@ export async function POST(req: Request) {
     const body = await req.json()
     const validatedData = confirmationSchema.parse(body)
 
-    // Create or update the confirmation form
-    const confirmation = await prisma.programConfirmation.upsert({
-      where: { applicationId: application.id },
-      create: {
-        applicationId: application.id,
-        ...validatedData,
-        submittedAt: new Date(),
-      },
-      update: {
-        ...validatedData,
-        submittedAt: new Date(),
-      },
-    })
+    // Create or update the confirmation form and update application status
+    const [confirmation] = await prisma.$transaction([
+      prisma.programConfirmation.upsert({
+        where: { applicationId: application.id },
+        create: {
+          applicationId: application.id,
+          ...validatedData,
+          submittedAt: new Date(),
+        },
+        update: {
+          ...validatedData,
+          submittedAt: new Date(),
+        },
+      }),
+      prisma.application.update({
+        where: { id: application.id },
+        data: { status: 'CONFIRMED' },
+      })
+    ])
 
     return NextResponse.json(confirmation)
   } catch (error) {

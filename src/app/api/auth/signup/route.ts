@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { hash } from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import { ApplicationStatus } from '@prisma/client'
 
 export async function POST(req: Request) {
   try {
@@ -26,7 +27,17 @@ export async function POST(req: Request) {
         password: hashedPassword,
         applications: {
           create: {
-            status: 'IN_PROGRESS'
+            status: ApplicationStatus.IN_PROGRESS,
+            name: '',
+            email: email,
+            school: '',
+            gradeLevel: '',
+            yearsOfExperience: '',
+            numTournaments: '',
+            debateExperience: '',
+            interestEssay: '',
+            selfAptitudeAssessment: '',
+            udlStudent: false
           }
         },
         profile: {

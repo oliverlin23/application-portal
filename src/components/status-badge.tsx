@@ -25,6 +25,14 @@ const statusConfig = {
   WITHDRAWN: {
     label: "Withdrawn",
     color: "bg-gray-100 text-gray-800 border-gray-200"
+  },
+  CONFIRMED: {
+    label: "Confirmed",
+    color: "bg-green-100 text-green-800 border-green-200"
+  },
+  COMPLETED: {
+    label: "Completed",
+    color: "bg-gray-100 text-gray-800 border-gray-200"
   }
 }
 

@@ -21,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { FileText } from "lucide-react"
 
 const confirmationFormSchema = z.object({
   studentName: z.string().min(2, "Student name is required"),
@@ -42,6 +43,11 @@ export default function ProgramConfirmationPage() {
   const { status } = useSession()
   const [error, setError] = useState('')
   const [application, setApplication] = useState<{ status?: string } | null>(null)
+  const [forms] = useState([
+    { name: 'Program Liability Waiver', path: '/forms/liability-waiver.pdf' },
+    { name: 'Medical Release Form', path: '/forms/medical-release.pdf' },
+    { name: 'Program Guidelines', path: '/forms/program-guidelines.pdf' },
+  ])
 
   const form = useForm<FormData>({
     resolver: zodResolver(confirmationFormSchema),
@@ -114,10 +120,104 @@ export default function ProgramConfirmationPage() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Program Information</CardTitle>
+          <CardDescription>
+            Important details about the Yale Summer Debate Program
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <h3 className="font-semibold text-lg">When</h3>
+                <p className="text-sm text-muted-foreground">
+                  August 18th - August 22nd<br />
+                  10:00 AM - 4:00 PM daily<br />
+                  <span className="text-yellow-600">Please do not arrive more than 15 minutes early</span>
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="font-semibold text-lg">Where</h3>
+                <p className="text-sm text-muted-foreground">
+                  Linsly-Chittenden Hall<br />
+                  63 High St, New Haven, CT 06511<br />
+                  <span className="italic">Location subject to change</span>
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="font-semibold text-lg">Check-in & Check-out</h3>
+                <p className="text-sm text-muted-foreground">
+                  Room 102, Linsly-Chittenden Hall<br />
+                  Students must check in/out with an adult coach<br />
+                  Parent/guardian check-out not required unless specified
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="font-semibold text-lg">Materials & Meals</h3>
+                <p className="text-sm text-muted-foreground">
+                  <strong>Bring:</strong> Paper, pens, and water bottle<br />
+                  <strong>Provided:</strong> Catered lunch and light breakfast<br />
+                  Students may bring their own meals if preferred
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t pt-4">
+              <h3 className="font-semibold text-lg mb-2">Payment Instructions</h3>
+              <p className="text-sm text-muted-foreground">
+                Program fee: $599 (Financial aid available)<br />
+                Payment due: July 15th, 2024<br />
+                Method: PayPal invoice (PayPal account not required)<br />
+                For payment assistance or alternative methods, contact:<br />
+                <a href="mailto:yalesummerdebateprogram@gmail.com" className="text-blue-600 hover:underline">
+                  yalesummerdebateprogram@gmail.com
+                </a>
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Program Forms</CardTitle>
+          <CardDescription>
+            Please review and download these important program documents.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {forms.map((form, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-2 border rounded hover:bg-gray-50"
+              >
+                <div className="flex items-center">
+                  <FileText className="mr-2 h-4 w-4" />
+                  <span>{form.name}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => window.open(form.path, '_blank')}
+                >
+                  View PDF
+                </Button>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Program Confirmation Form</CardTitle>
           <CardDescription>
             Please complete this form to confirm your participation in the Yale Summer Debate Program.
-            This form must be completed by a parent or guardian.
+            This form must be completed by a parent or guardian. All consents and waivers below are legally binding.
           </CardDescription>
         </CardHeader>
         <CardContent>

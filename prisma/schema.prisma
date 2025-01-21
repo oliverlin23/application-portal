@@ -84,4 +84,6 @@ enum ApplicationStatus {
     WAITLISTED
     DENIED
     WITHDRAWN
+    CONFIRMED
+    COMPLETED
 }

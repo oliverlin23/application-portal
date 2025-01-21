@@ -1,19 +1,35 @@
-import nodemailer from 'nodemailer'
+import sgMail from '@sendgrid/mail'
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_SERVER_HOST,
-  port: Number(process.env.EMAIL_SERVER_PORT),
-  auth: {
-    user: process.env.EMAIL_SERVER_USER,
-    pass: process.env.EMAIL_SERVER_PASSWORD,
-  },
-})
+interface MailOptions {
+  from: string;
+  to?: string;
+  subject: string;
+  html: string;
+}
+
+// Initialize SendGrid with your API key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!)
+
+// Replace the existing transporter with SendGrid send function
+const sendMail = async (mailOptions: MailOptions) => {
+  const msg = {
+    from: {
+      email: mailOptions.from.split('<')[1].split('>')[0] || 'noreply@ynhudl.com',
+      name: mailOptions.from.split('<')[0].trim() || 'Yale Summer Debate Program'
+    },
+    to: mailOptions.to,
+    subject: mailOptions.subject,
+    html: mailOptions.html,
+  }
+  
+  return sgMail.send(msg)
+}
 
 export async function sendVerificationEmail(email: string, token: string) {
   const confirmLink = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${token}`
 
-  await transporter.sendMail({
-    from: '"Yale Summer Debate Program" <noreply@ynhudl.com>',
+  await sendMail({
+    from: 'Yale Summer Debate Program <noreply@ynhudl.com>',
     to: email,
     subject: "Verify your email address",
     html: `
@@ -33,7 +49,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   const resetLink = `${process.env.NEXTAUTH_URL}/reset-password/${token}`
 
   const mailOptions = {
-    from: '"Yale Summer Debate Program" <noreply@ynhudl.com>',
+    from: 'Yale Summer Debate Program <noreply@ynhudl.com>',
     to: email,
     subject: "Reset Your Password - Yale Summer Debate Program",
     html: `
@@ -66,7 +82,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
             .button {
               display: inline-block;
               padding: 12px 24px;
-              background-color: #00356B;
+              background-color: #0056b3;
               color: white;
               text-decoration: none;
               border-radius: 5px;
@@ -94,7 +110,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
               <h2>Password Reset Request</h2>
               <p>We received a request to reset your password for your Yale Summer Debate Program account. Please click the button below to select a new password:</p>
               <center>
-                <a href="${resetLink}" class="button">Reset Password</a>
+                <a href="${resetLink}" class="button" style="color: white;">Reset Password</a>
               </center>
               <p>If you didn't request this password reset, you can safely ignore this email - your password will remain unchanged.</p>
               <div class="warning">
@@ -114,9 +130,9 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   }
 
   try {
-    const info = await transporter.sendMail(mailOptions)
-    console.log('Password reset email sent:', info.messageId)
-    return info
+    const [response] = await sendMail(mailOptions)
+    console.log('Password reset email sent:', response.headers['x-message-id'])
+    return response
   } catch (error) {
     console.error('Error sending password reset email:', error)
     throw error
@@ -189,7 +205,7 @@ export async function sendApplicationNotification(
   `;
 
   const mailOptions = {
-    from: '"Yale Summer Debate Program" <noreply@ynhudl.com>',
+    from: 'Yale Summer Debate Program <noreply@ynhudl.com>',
     subject,
     html,
   };
@@ -197,11 +213,11 @@ export async function sendApplicationNotification(
   try {
     // Only send separate emails if the addresses are different
     if (studentEmail === parentEmail) {
-      await transporter.sendMail({ ...mailOptions, to: studentEmail })
+      await sendMail(mailOptions)
     } else {
       await Promise.all([
-        transporter.sendMail({ ...mailOptions, to: studentEmail }),
-        transporter.sendMail({ ...mailOptions, to: parentEmail })
+        sendMail(mailOptions),
+        sendMail({ ...mailOptions, to: parentEmail })
       ])
     }
   } catch (error) {
@@ -325,7 +341,7 @@ export async function sendStatusUpdateEmail(
   `
 
   const mailOptions = {
-    from: '"Yale Summer Debate Program" <noreply@ynhudl.com>',
+    from: 'Yale Summer Debate Program <noreply@ynhudl.com>',
     subject,
     html,
   }
@@ -333,11 +349,11 @@ export async function sendStatusUpdateEmail(
   try {
     // Only send separate emails if the addresses are different
     if (studentEmail === parentEmail) {
-      await transporter.sendMail({ ...mailOptions, to: studentEmail })
+      await sendMail(mailOptions)
     } else {
       await Promise.all([
-        transporter.sendMail({ ...mailOptions, to: studentEmail }),
-        transporter.sendMail({ ...mailOptions, to: parentEmail })
+        sendMail(mailOptions),
+        sendMail({ ...mailOptions, to: parentEmail })
       ])
     }
   } catch (error) {

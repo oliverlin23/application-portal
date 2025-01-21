@@ -31,9 +31,10 @@ export default function AdminDashboard() {
   const { data: stats, isLoading } = useQuery<DashboardStats>({
     queryKey: ['adminStats'],
     queryFn: async () => {
-      const res = await fetch('/api/admin/stats')
+      const res = await fetch('/api/admin/applications?status=ALL')
       if (!res.ok) throw new Error('Failed to fetch stats')
-      return res.json()
+      const data = await res.json()
+      return data.stats
     }
   })
 

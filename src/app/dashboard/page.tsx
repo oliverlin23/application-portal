@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { FileText, UserCircle } from "lucide-react"
 import Link from "next/link"
 import { PrismaClient } from '@prisma/client'
+import { cn } from "@/lib/utils"
 
 const prisma = new PrismaClient()
 
@@ -30,7 +31,9 @@ export default async function DashboardPage() {
     ACCEPTED: "text-green-500",
     WAITLISTED: "text-orange-500",
     DENIED: "text-red-500",
-    WITHDRAWN: "text-gray-500"
+    WITHDRAWN: "text-gray-500",
+    CONFIRMED: "text-green-500",
+    COMPLETED: "text-green-500"
   }
 
   const statusText = application?.status || "IN_PROGRESS"
@@ -81,21 +84,27 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        {application?.status === 'ACCEPTED' && (
+        {(application?.status === 'ACCEPTED' || application?.status === 'CONFIRMED' || application?.status === 'COMPLETED') && (
           <Card className="p-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Program Confirmation</CardTitle>
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-500">
+              <div className={cn("text-2xl font-bold", {
+                "text-yellow-500": application?.status === 'ACCEPTED',
+                "text-green-500": application?.status === 'CONFIRMED' || application?.status === 'COMPLETED'
+              })}>
                 Required Action
               </div>
               <div className="h-2" />
               <p className="text-xs text-muted-foreground">
                 Complete your program confirmation form by July 15th
               </p>
-              <Button asChild className="rounded-full w-full bg-green-500 hover:bg-green-600 text-white mt-6">
+              <Button asChild className={cn("rounded-full w-full text-white mt-6", {
+                "bg-yellow-500 hover:bg-yellow-600": application?.status === 'ACCEPTED',
+                "bg-green-500 hover:bg-green-600": application?.status === 'CONFIRMED' || application?.status === 'COMPLETED'
+              })}>
                 <Link href="/dashboard/confirmation">Complete Form</Link>
               </Button>
             </CardContent>
