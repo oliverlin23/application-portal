@@ -126,7 +126,7 @@ function ApplicationForm() {
   const [application, setApplication] = useState<{ status?: string } | null>(null)
   const { toast } = useToast()
 
-  const isSubmitted = application?.status === 'SUBMITTED'
+  const isSubmitted = application?.status != 'IN_PROGRESS'
 
   const fetchApplicationData = useCallback(async () => {
     const response = await fetch('/api/application')
@@ -437,7 +437,7 @@ function ApplicationForm() {
               ) : (
                 <Button
                   onClick={() => setShowSubmitAlert(true)}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isSubmitted}
                   className="w-full"
                 >
                   Submit Application

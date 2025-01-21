@@ -35,26 +35,46 @@ model User {
     resetTokenExpiry DateTime?
     isAdmin          Boolean       @default(false)
     profile          Profile?
-    applications      Application[]
+    applications     Application[]
 }
 
 model Application {
-    id         String            @id @default(cuid())
-    userId     String            @unique
-    name       String?
-    email      String?
-    school     String?
-    udlStudent Boolean           @default(false)
-    gradeLevel String?
-    yearsOfExperience String?
-    numTournaments String?
-    debateExperience String?
-    interestEssay String?
-    selfAptitudeAssessment String?
-    status     ApplicationStatus @default(IN_PROGRESS)
-    createdAt  DateTime          @default(now())
-    updatedAt  DateTime          @updatedAt
-    user       User              @relation(fields: [userId], references: [id])
+    id                     String               @id @default(cuid())
+    userId                 String               @unique
+    user                   User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+    name                   String?
+    email                  String?
+    school                 String?
+    udlStudent             Boolean              @default(false)
+    gradeLevel             String?
+    yearsOfExperience      String?
+    numTournaments         String?
+    debateExperience       String?              @db.Text
+    interestEssay          String?              @db.Text
+    selfAptitudeAssessment String?              @db.Text
+    status                 ApplicationStatus    @default(IN_PROGRESS)
+    createdAt              DateTime             @default(now())
+    updatedAt              DateTime             @updatedAt
+    programConfirmation    ProgramConfirmation?
+}
+
+model ProgramConfirmation {
+    id                  String      @id @default(cuid())
+    applicationId       String      @unique
+    application         Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+    studentName         String
+    parentName          String
+    emergencyContact    String
+    dietaryRestrictions String?     @db.Text
+    medicalConditions   String?     @db.Text
+    photoRelease        Boolean
+    liabilityWaiver     Boolean
+    paymentMethod       String
+    financialAidRequest Boolean
+    additionalNotes     String?     @db.Text
+    submittedAt         DateTime
+    createdAt           DateTime    @default(now())
+    updatedAt           DateTime    @updatedAt
 }
 
 enum ApplicationStatus {
