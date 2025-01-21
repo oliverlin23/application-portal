@@ -57,6 +57,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
       <html>
         <head>
           <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>
             .email-container {
               max-width: 600px;
@@ -67,76 +68,87 @@ export async function sendPasswordResetEmail(email: string, token: string) {
             }
             .header {
               background-color: #00356B;
-              padding: 20px;
+              padding: 30px;
               text-align: center;
+              border-radius: 8px 8px 0 0;
             }
             .header h1 {
               color: white;
               margin: 0;
               font-size: 24px;
+              font-weight: 600;
             }
             .content {
-              padding: 30px 20px;
+              padding: 40px 30px;
               background-color: #ffffff;
+              border: 1px solid #e5e7eb;
+              border-top: none;
+              border-radius: 0 0 8px 8px;
             }
             .button {
               display: inline-block;
-              padding: 12px 24px;
-              background-color: #0056b3;
-              color: white;
+              padding: 14px 28px;
+              background-color: #00356B;
+              color: white !important;
               text-decoration: none;
-              border-radius: 5px;
+              border-radius: 6px;
               margin: 20px 0;
+              font-weight: 500;
+              font-size: 16px;
             }
             .footer {
-              padding: 20px;
+              padding: 24px;
               text-align: center;
-              font-size: 12px;
+              font-size: 13px;
               color: #666666;
             }
             .warning {
-              font-size: 12px;
+              margin-top: 30px;
+              padding: 20px;
+              background-color: #f9fafb;
+              border-radius: 6px;
+              font-size: 14px;
               color: #666666;
-              margin-top: 20px;
+            }
+            @media only screen and (max-width: 600px) {
+              .content {
+                padding: 30px 20px;
+              }
+              .header {
+                padding: 20px;
+              }
             }
           </style>
         </head>
-        <body>
+        <body style="margin: 0; padding: 20px; background-color: #f3f4f6;">
           <div class="email-container">
             <div class="header">
               <h1>Yale Summer Debate Program</h1>
             </div>
             <div class="content">
-              <h2>Password Reset Request</h2>
-              <p>We received a request to reset your password for your Yale Summer Debate Program account. Please click the button below to select a new password:</p>
-              <center>
-                <a href="${resetLink}" class="button" style="color: white;">Reset Password</a>
-              </center>
+              <h2 style="margin-top: 0; color: #1f2937; font-size: 20px;">Password Reset Request</h2>
+              <p>We received a request to reset your password for your Yale Summer Debate Program account. Click the button below to create a new password:</p>
+              <div style="text-align: center;">
+                <a href="${resetLink}" class="button">Reset Password</a>
+              </div>
               <p>If you didn't request this password reset, you can safely ignore this email - your password will remain unchanged.</p>
               <div class="warning">
-                <p>This password reset link will expire in 1 hour for security reasons.</p>
-                <p>If the button above doesn't work, you can copy and paste this link into your browser:</p>
-                <p style="word-break: break-all; font-size: 12px;">${resetLink}</p>
+                <p style="margin: 0 0 10px 0;">⚠️ This password reset link will expire in 1 hour for security reasons.</p>
+                <p style="margin: 0 0 10px 0;">If the button above doesn't work, you can copy and paste this link into your browser:</p>
+                <p style="margin: 0; word-break: break-all; font-family: monospace; font-size: 12px;">${resetLink}</p>
               </div>
             </div>
             <div class="footer">
-              <p>This is an automated message, please do not reply to this email.</p>
-              <p>&copy; ${new Date().getFullYear()} Yale Summer Debate Program. All rights reserved.</p>
+              <p style="margin: 0 0 10px 0;">This is an automated message, please do not reply to this email.</p>
+              <p style="margin: 0;">&copy; ${new Date().getFullYear()} Yale Summer Debate Program. All rights reserved.</p>
             </div>
           </div>
         </body>
       </html>
-    `,
+    `
   }
 
-  try {
-    const [response] = await sendMail(mailOptions)
-    console.log('Password reset email sent:', response.headers['x-message-id'])
-    return response
-  } catch (error) {
-    console.error('Error sending password reset email:', error)
-    throw error
-  }
+  await sendMail(mailOptions)
 }
 
 export async function sendApplicationNotification(
