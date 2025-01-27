@@ -59,22 +59,27 @@ model Application {
 }
 
 model ProgramConfirmation {
-    id                  String      @id @default(cuid())
-    applicationId       String      @unique
-    application         Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-    studentName         String
-    parentName          String
-    emergencyContact    String
-    dietaryRestrictions String?     @db.Text
-    medicalConditions   String?     @db.Text
-    photoRelease        Boolean
-    liabilityWaiver     Boolean
-    paymentMethod       String
-    financialAidRequest Boolean
-    additionalNotes     String?     @db.Text
-    submittedAt         DateTime
-    createdAt           DateTime    @default(now())
-    updatedAt           DateTime    @updatedAt
+    id                     String      @id @default(cuid())
+    applicationId          String      @unique
+    studentName            String
+    parentName             String
+    emergencyContact       String
+    dietaryRestrictions    String      @default("")
+    medicalConditions      String      @default("")
+    healthInsuranceCarrier String      @default("")
+    groupPolicyNumber      String      @default("")
+    liabilityWaiver        Boolean
+    medicalRelease         Boolean
+    mediaRelease           Boolean
+    programGuidelines      Boolean
+    financialAidRequest    Boolean     @default(false)
+    additionalNotes        String      @default("")
+    submittedAt            DateTime
+    createdAt              DateTime    @default(now())
+    updatedAt              DateTime    @updatedAt
+    application            Application @relation(fields: [applicationId], references: [id])
+
+    @@index([applicationId])
 }
 
 enum ApplicationStatus {

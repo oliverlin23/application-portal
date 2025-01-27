@@ -95,7 +95,7 @@ export default async function DashboardPage() {
                 "text-yellow-500": application?.status === 'ACCEPTED',
                 "text-green-500": application?.status === 'CONFIRMED' || application?.status === 'COMPLETED'
               })}>
-                Required Action
+                {application?.status === 'CONFIRMED' || application?.status === 'COMPLETED' ? 'Completed' : 'Required Action'}
               </div>
               <div className="h-2" />
               <p className="text-xs text-muted-foreground">

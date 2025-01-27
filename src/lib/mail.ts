@@ -1,10 +1,20 @@
 import sgMail from '@sendgrid/mail'
+import fs from 'fs'
+import path from 'path'
+
+interface Attachment {
+  content: string;
+  filename: string;
+  type: string;
+  disposition: string;
+}
 
 interface MailOptions {
   from: string;
   to?: string;
   subject: string;
   html: string;
+  attachments?: Attachment[];
 }
 
 // Initialize SendGrid with your API key
@@ -20,6 +30,7 @@ const sendMail = async (mailOptions: MailOptions) => {
     to: mailOptions.to,
     subject: mailOptions.subject,
     html: mailOptions.html,
+    attachments: mailOptions.attachments
   }
   
   return sgMail.send(msg)
@@ -148,7 +159,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     `
   }
 
-  await sendMail(mailOptions)
+  await sendMail({ ...mailOptions, to: email })
 }
 
 export async function sendApplicationNotification(
@@ -225,11 +236,11 @@ export async function sendApplicationNotification(
   try {
     // Only send separate emails if the addresses are different
     if (studentEmail === parentEmail) {
-      await sendMail(mailOptions)
+      await sendMail({ ...mailOptions, to: studentEmail })
     } else {
       await Promise.all([
-        sendMail(mailOptions),
-        sendMail({ ...mailOptions, to: parentEmail })
+        sendMail({ ...mailOptions, to: parentEmail }),
+        sendMail({ ...mailOptions, to: studentEmail })
       ])
     }
   } catch (error) {
@@ -337,7 +348,7 @@ export async function sendStatusUpdateEmail(
             <div style="white-space: pre-line">
               ${statusMessages[status as keyof typeof statusMessages]}
             </div>
-            <p class="contact">If you have any questions, please don't hesitate to contact us at <a href="mailto:yalesummerdebateprogram@gmail.com">yalesummerdebateprogram@gmail.com</a>.</p>
+            <p>If you have any questions, please don't hesitate to contact us at <a href="mailto:yalesummerdebateprogram@gmail.com">yalesummerdebateprogram@gmail.com</a>.</p>
             <div class="signature">
               <p>Best regards,</p>
               <p>Ayna Sibtain<br>Dennis Jin<br>Yale Summer Debate Program Co-Directors</p>
@@ -361,14 +372,106 @@ export async function sendStatusUpdateEmail(
   try {
     // Only send separate emails if the addresses are different
     if (studentEmail === parentEmail) {
-      await sendMail(mailOptions)
+      await sendMail({ ...mailOptions, to: studentEmail })
     } else {
       await Promise.all([
-        sendMail(mailOptions),
-        sendMail({ ...mailOptions, to: parentEmail })
+        sendMail({ ...mailOptions, to: parentEmail }),
+        sendMail({ ...mailOptions, to: studentEmail })
       ])
     }
   } catch (error) {
     console.error('Failed to send status update email:', error)
+  }
+}
+
+export async function sendConfirmationEmail(
+  studentEmail: string,
+  parentEmail: string,
+  studentName: string,
+  parentName: string,
+  formData: {
+    emergencyContact: string;
+    dietaryRestrictions?: string;
+    medicalConditions?: string;
+    financialAidRequest: boolean;
+  }
+) {
+  const forms = [
+    { name: 'Program Liability Waiver', path: 'public/forms/liability-waiver.pdf' },
+    { name: 'Medical Release Form', path: 'public/forms/medical-release.pdf' },
+    { name: 'Media Release Form', path: 'public/forms/media-release.pdf' },
+    { name: 'Program Guidelines', path: 'public/forms/program-guidelines.pdf' },
+  ]
+
+  // Read all PDF files
+  const attachments = await Promise.all(forms.map(async (form) => {
+    const fileContent = await fs.promises.readFile(form.path)
+    return {
+      content: fileContent.toString('base64'),
+      filename: path.basename(form.path),
+      type: 'application/pdf',
+      disposition: 'attachment'
+    }
+  }))
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="email-container">
+          <h1>Program Confirmation Received</h1>
+          <p>Dear ${parentName},</p>
+          <p>Thank you for confirming ${studentName}'s participation in the Yale Summer Debate Program. We have received your program confirmation form and all required consents.</p>
+          
+          <h2>Important Details Submitted:</h2>
+          <ul>
+            <li>Emergency Contact: ${formData.emergencyContact}</li>
+            ${formData.dietaryRestrictions ? `<li>Dietary Restrictions: ${formData.dietaryRestrictions}</li>` : ''}
+            ${formData.medicalConditions ? `<li>Medical Conditions: ${formData.medicalConditions}</li>` : ''}
+          </ul>
+          
+          ${formData.financialAidRequest ? '<p><strong>Note:</strong> Your request for financial aid has been recorded. We will contact you with more information soon.</p>' : ''}
+          
+          <p>Attached to this email, you'll find copies of all signed forms for your records.</p>
+          
+          <p>If you have any questions, please contact us at yalesummerdebateprogram@gmail.com.</p>
+          
+          <p>Best regards,<br>Yale Summer Debate Program Team</p>
+        </div>
+      </body>
+    </html>
+  `
+
+  const mailOptions = {
+    from: 'Yale Summer Debate Program <noreply@ynhudl.com>',
+    subject: 'YSDP Program Confirmation Received',
+    html,
+    attachments
+  }
+
+  try {
+    // Only send separate emails if the addresses are different
+    if (studentEmail === parentEmail) {
+      await sendMail({ ...mailOptions, to: studentEmail })
+    } else {
+      await Promise.all([
+        sendMail({ ...mailOptions, to: parentEmail }),
+        sendMail({ ...mailOptions, to: studentEmail })
+      ])
+    }
+  } catch (error) {
+    console.error('Failed to send confirmation email:', error)
+    throw error
   }
 } 

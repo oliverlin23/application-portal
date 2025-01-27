@@ -3,18 +3,30 @@ import { getServerSession } from 'next-auth'
 import { prisma } from '@/lib/prisma'
 import { authOptions } from '@/lib/auth'
 import { z } from 'zod'
+import { sendConfirmationEmail } from '@/lib/mail'
 
 const confirmationSchema = z.object({
-  studentName: z.string().min(2),
-  parentName: z.string().min(2),
-  emergencyContact: z.string().min(10),
-  dietaryRestrictions: z.string(),
-  medicalConditions: z.string(),
-  photoRelease: z.boolean(),
-  liabilityWaiver: z.boolean(),
-  paymentMethod: z.enum(["PAYPAL", "CHECK", "FINANCIAL_AID"]),
-  financialAidRequest: z.boolean(),
-  additionalNotes: z.string(),
+  studentName: z.string().min(2, "Student name is required"),
+  parentName: z.string().min(2, "Parent/guardian name is required"),
+  emergencyContact: z.string().min(10, "Emergency contact number is required"),
+  dietaryRestrictions: z.string().optional().default(''),
+  medicalConditions: z.string().optional().default(''),
+  healthInsuranceCarrier: z.string().optional().default(''),
+  groupPolicyNumber: z.string().optional().default(''),
+  liabilityWaiver: z.boolean().refine((val) => val === true, {
+    message: "Liability waiver consent is required"
+  }),
+  medicalRelease: z.boolean().refine((val) => val === true, {
+    message: "Medical release consent is required"
+  }),
+  mediaRelease: z.boolean().refine((val) => val === true, {
+    message: "Media release consent is required"
+  }),
+  programGuidelines: z.boolean().refine((val) => val === true, {
+    message: "Program guidelines consent is required"
+  }),
+  financialAidRequest: z.boolean().default(false),
+  additionalNotes: z.string().optional().default(''),
 })
 
 export async function POST(req: Request) {
@@ -24,50 +36,62 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Verify the user has an accepted application
+    const data = await req.json()
+    const validatedData = confirmationSchema.parse(data)
+
+    // Get the application to fetch emails
     const application = await prisma.application.findUnique({
       where: { userId: session.user.id },
+      include: {
+        user: {
+          select: {
+            profile: {
+              select: {
+                parentEmail: true
+              }
+            }
+          }
+        }
+      }
     })
 
-    if (!application || application.status !== 'ACCEPTED') {
-      return NextResponse.json(
-        { error: 'Only accepted applications can submit confirmation forms' },
-        { status: 403 }
-      )
+    if (!application) {
+      return NextResponse.json({ error: 'Application not found' }, { status: 404 })
     }
 
-    const body = await req.json()
-    const validatedData = confirmationSchema.parse(body)
+    // Save confirmation data to database
+    const confirmation = await prisma.programConfirmation.upsert({
+      where: {
+        applicationId: application.id
+      },
+      create: {
+        ...validatedData,
+        applicationId: application.id,
+        submittedAt: new Date()
+      },
+      update: {
+        ...validatedData,
+        submittedAt: new Date()
+      }
+    })
 
-    // Create or update the confirmation form and update application status
-    const [confirmation] = await prisma.$transaction([
-      prisma.programConfirmation.upsert({
-        where: { applicationId: application.id },
-        create: {
-          applicationId: application.id,
-          ...validatedData,
-          submittedAt: new Date(),
-        },
-        update: {
-          ...validatedData,
-          submittedAt: new Date(),
-        },
-      }),
-      prisma.application.update({
-        where: { id: application.id },
-        data: { status: 'CONFIRMED' },
-      })
-    ])
+    // Send confirmation email
+    await sendConfirmationEmail(
+      application.email ?? '',
+      application.user.profile?.parentEmail ?? '',
+      validatedData.studentName,
+      validatedData.parentName,
+      validatedData
+    )
+
+    // Update application status to CONFIRMED
+    await prisma.application.update({
+      where: { id: application.id },
+      data: { status: 'CONFIRMED' }
+    })
 
     return NextResponse.json(confirmation)
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
-        { status: 400 }
-      )
-    }
-
     console.error('Confirmation submission error:', error)
     return NextResponse.json(
       { error: 'Failed to submit confirmation' },
