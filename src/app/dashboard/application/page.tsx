@@ -30,14 +30,11 @@ const applicationSchema = z.object({
   yearsOfExperience: z.string().min(1, "Please specify years of experience"),
   numTournaments: z.string().min(1, "Please specify number of tournaments"),
   debateExperience: z.string()
-    .min(50, "Please provide at least 50 character describing your debate experience")
-    .max(1000, "Debate experience should not exceed 1000 characters"),
+    .min(50, "Please provide at least 50 character describing your debate experience"),
   interestEssay: z.string()
-    .min(100, "Please provide at least 100 characters for your interest essay")
-    .max(1000, "Interest essay should not exceed 1000 characters"),
+    .min(100, "Please provide at least 100 characters for your interest essay"),
   selfAptitudeAssessment: z.string()
     .min(50, "Please provide at least 50 character for your self-assessment")
-    .max(500, "Self-assessment should not exceed 500 characters"),
 })
 
 type FormData = z.infer<typeof applicationSchema>
