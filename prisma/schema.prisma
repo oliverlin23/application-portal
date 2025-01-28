@@ -80,7 +80,6 @@ model ProgramConfirmation {
     updatedAt              DateTime    @updatedAt
     application            Application @relation(fields: [applicationId], references: [id])
     paymentStatus          String?
-    paypalOrderId          String?
 
     @@index([applicationId])
 }
