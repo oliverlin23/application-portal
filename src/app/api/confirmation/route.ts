@@ -37,7 +37,9 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json()
+    console.log('Received confirmation data:', data)
     const validatedData = confirmationSchema.parse(data)
+    console.log('Validated confirmation data:', validatedData)
 
     // Get the application to fetch emails
     const application = await prisma.application.findUnique({
@@ -54,6 +56,7 @@ export async function POST(req: Request) {
         }
       }
     })
+    console.log('Found application:', application)
 
     if (!application) {
       return NextResponse.json({ error: 'Application not found' }, { status: 404 })
@@ -74,6 +77,7 @@ export async function POST(req: Request) {
         submittedAt: new Date()
       }
     })
+    console.log('Created/Updated confirmation:', confirmation)
 
     // Send confirmation email
     await sendConfirmationEmail(
@@ -85,18 +89,24 @@ export async function POST(req: Request) {
     )
 
     // Update application status to CONFIRMED
-    await prisma.application.update({
+    const updatedApplication = await prisma.application.update({
       where: { id: application.id },
       data: { status: 'CONFIRMED' }
     })
 
-    return NextResponse.json(confirmation)
+    return NextResponse.json({ confirmation, application: updatedApplication })
   } catch (error) {
-    console.error('Confirmation submission error:', error)
-    return NextResponse.json(
-      { error: 'Failed to submit confirmation' },
-      { status: 500 }
-    )
+    console.error('Confirmation error:', error instanceof Error ? error.message : 'Unknown error')
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({
+        error: error.errors[0].message
+      }, { status: 400 })
+    }
+
+    return NextResponse.json({
+      error: error instanceof Error ? error.message : 'Failed to submit confirmation'
+    }, { status: 500 })
   }
 }
 
