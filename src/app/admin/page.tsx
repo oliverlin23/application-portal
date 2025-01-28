@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table"
 import { StatusBadge } from "@/components/status-badge"
 import { Button } from "@/components/ui/button"
-import { Link } from "next/navigation"
+import Link from "next/link"
 
 interface DashboardStats {
   totalApplications: number
