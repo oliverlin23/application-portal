@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { authOptions } from '@/lib/auth'
 import { z } from 'zod'
 import { sendConfirmationEmail } from '@/lib/mail'
+import { createPayPalInvoice } from '@/lib/paypal'
 
 const confirmationSchema = z.object({
   studentName: z.string().min(2, "Student name is required"),
@@ -83,6 +84,39 @@ export async function POST(req: Request) {
       validatedData.parentName,
       validatedData
     )
+
+    // If not requesting financial aid, create PayPal order
+    if (!validatedData.financialAidRequest) {
+      try {
+        const paypalOrder = await createPayPalInvoice(
+          validatedData.studentName,
+          validatedData.parentName,
+          application.user.profile?.parentEmail ?? '',
+          application.udlStudent
+        )
+
+        // Update confirmation with PayPal order ID
+        await prisma.programConfirmation.update({
+          where: { id: confirmation.id },
+          data: { 
+            paymentStatus: 'PENDING',
+            paypalOrderId: paypalOrder.id
+          }
+        })
+
+        // Return PayPal order info with confirmation
+        return NextResponse.json({
+          ...confirmation,
+          paypalOrder: {
+            id: paypalOrder.id,
+            links: paypalOrder.links
+          }
+        })
+      } catch (error) {
+        console.error('Failed to create PayPal order:', error)
+        // Continue with confirmation but log the error
+      }
+    }
 
     // Update application status to CONFIRMED
     await prisma.application.update({

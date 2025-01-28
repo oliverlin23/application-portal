@@ -2,7 +2,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { FileText, UserCircle } from "lucide-react"
+import { FileText, UserCircle, DollarSign } from "lucide-react"
 import Link from "next/link"
 import { PrismaClient } from '@prisma/client'
 import { cn } from "@/lib/utils"
@@ -19,10 +19,22 @@ const formatStatus = (status: string) => {
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   
-  // Fetch application status
+  // Fetch application with confirmation and financial aid details
   const application = await prisma.application.findUnique({
     where: { userId: session?.user?.id },
-    select: { status: true }
+    select: { 
+      status: true,
+      programConfirmation: {
+        select: {
+          financialAidRequest: true
+        }
+      },
+      FinancialAidApplication: {
+        select: {
+          status: true
+        }
+      }
+    }
   })
 
   const statusColors = {
@@ -37,6 +49,8 @@ export default async function DashboardPage() {
   }
 
   const statusText = application?.status || "IN_PROGRESS"
+  const showFinancialAid = application?.status === "CONFIRMED" && 
+                          application?.programConfirmation?.financialAidRequest === true
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
@@ -84,6 +98,39 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
+        {showFinancialAid && (
+            <Card className="p-2">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Financial Aid Application</CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {application?.FinancialAidApplication ? (
+                    <span className={
+                      application.FinancialAidApplication.status === 'PENDING' ? 'text-yellow-500' :
+                      application.FinancialAidApplication.status === 'APPROVED' ? 'text-green-500' :
+                      'text-red-500'
+                    }>
+                      {formatStatus(application.FinancialAidApplication.status || 'PENDING')}
+                    </span>
+                  ) : (
+                    <span className="text-yellow-500">Not Submitted</span>
+                  )}
+                </div>
+                <div className="h-2" />
+                <p className="text-xs text-muted-foreground">
+                  Submit your financial aid application
+                </p>
+                <Button asChild className="rounded-full w-full bg-blue-500 hover:bg-blue-600 text-white mt-6">
+                  <Link href="/dashboard/financial-aid">
+                    {application?.FinancialAidApplication ? 'View Application' : 'Start Application'}
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
         {(application?.status === 'ACCEPTED' || application?.status === 'CONFIRMED' || application?.status === 'COMPLETED') && (
           <Card className="p-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -105,7 +152,7 @@ export default async function DashboardPage() {
                 "bg-yellow-500 hover:bg-yellow-600": application?.status === 'ACCEPTED',
                 "bg-green-500 hover:bg-green-600": application?.status === 'CONFIRMED' || application?.status === 'COMPLETED'
               })}>
-                <Link href="/dashboard/confirmation">Complete Form</Link>
+                <Link href="/dashboard/confirmation">{application?.status === 'CONFIRMED' || application?.status === 'COMPLETED' ? 'View Form' : 'Complete Form'}</Link>
               </Button>
             </CardContent>
           </Card>

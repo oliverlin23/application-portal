@@ -39,23 +39,24 @@ model User {
 }
 
 model Application {
-    id                     String               @id @default(cuid())
-    userId                 String               @unique
-    user                   User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-    name                   String?
-    email                  String?
-    school                 String?
-    udlStudent             Boolean              @default(false)
-    gradeLevel             String?
-    yearsOfExperience      String?
-    numTournaments         String?
-    debateExperience       String?              @db.Text
-    interestEssay          String?              @db.Text
-    selfAptitudeAssessment String?              @db.Text
-    status                 ApplicationStatus    @default(IN_PROGRESS)
-    createdAt              DateTime             @default(now())
-    updatedAt              DateTime             @updatedAt
-    programConfirmation    ProgramConfirmation?
+    id                      String                   @id @default(cuid())
+    userId                  String                   @unique
+    user                    User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    name                    String?
+    email                   String?
+    school                  String?
+    udlStudent              Boolean                  @default(false)
+    gradeLevel              String?
+    yearsOfExperience       String?
+    numTournaments          String?
+    debateExperience        String?                  @db.Text
+    interestEssay           String?                  @db.Text
+    selfAptitudeAssessment  String?                  @db.Text
+    status                  ApplicationStatus        @default(IN_PROGRESS)
+    createdAt               DateTime                 @default(now())
+    updatedAt               DateTime                 @updatedAt
+    programConfirmation     ProgramConfirmation?
+    FinancialAidApplication FinancialAidApplication?
 }
 
 model ProgramConfirmation {
@@ -78,6 +79,24 @@ model ProgramConfirmation {
     createdAt              DateTime    @default(now())
     updatedAt              DateTime    @updatedAt
     application            Application @relation(fields: [applicationId], references: [id])
+    paymentStatus          String?
+    paypalOrderId          String?
+
+    @@index([applicationId])
+}
+
+model FinancialAidApplication {
+    id                 String      @id @default(cuid())
+    applicationId      String      @unique
+    application        Application @relation(fields: [applicationId], references: [id])
+    dependents         String      @default("")
+    householdIncome    String      @default("")
+    receivedAssistance Boolean     @default(false)
+    circumstances      String      @db.Text
+    willProvideReturns Boolean     @default(false)
+    submittedAt        DateTime    @default(now())
+    updatedAt          DateTime    @updatedAt
+    status             String?     @default("PENDING") // PENDING, APPROVED, DENIED
 
     @@index([applicationId])
 }

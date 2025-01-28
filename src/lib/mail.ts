@@ -441,9 +441,9 @@ export async function sendConfirmationEmail(
             ${formData.medicalConditions ? `<li>Medical Conditions: ${formData.medicalConditions}</li>` : ''}
           </ul>
           
-          ${formData.financialAidRequest ? '<p><strong>Note:</strong> Your request for financial aid has been recorded. We will contact you with more information soon.</p>' : ''}
+          ${formData.financialAidRequest ? '<p><strong>Note:</strong> Your request for financial aid has been recorded. Please complete the financial aid form on your dashboard, and we will contact you with your financial aid decision as soon as possible.</p>' : ''}
           
-          <p>Attached to this email, you'll find copies of all signed forms for your records.</p>
+          <p>Attached to this email, you'll find copies of all accepted forms for your records.</p>
           
           <p>If you have any questions, please contact us at yalesummerdebateprogram@gmail.com.</p>
           
