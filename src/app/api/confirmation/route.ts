@@ -94,7 +94,10 @@ export async function POST(req: Request) {
       data: { status: 'CONFIRMED' }
     })
 
-    return NextResponse.json({ confirmation, application: updatedApplication })
+    return NextResponse.json({ 
+      confirmation, 
+      application: updatedApplication
+    })
   } catch (error) {
     console.error('Confirmation error:', error instanceof Error ? error.message : 'Unknown error')
     

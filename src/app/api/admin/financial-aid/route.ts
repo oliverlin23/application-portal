@@ -9,7 +9,7 @@ const updateStatusSchema = z.object({
   applicationId: z.string()
 })
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user) {
@@ -26,33 +26,86 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { searchParams } = new URL(req.url)
+    const search = searchParams.get('search') || ''
+    const status = searchParams.get('status')
+
     // Get all financial aid applications with related data
-    const applications = await prisma.financialAidApplication.findMany({
-      include: {
-        application: {
-          include: {
-            user: {
-              select: {
-                name: true,
-                email: true,
-                profile: {
-                  select: {
-                    school: true,
-                    gradeLevel: true,
-                    parentEmail: true
+    const [applications, counts] = await Promise.all([
+      prisma.financialAidApplication.findMany({
+        where: {
+          AND: [
+            {
+              OR: [
+                {
+                  application: {
+                    OR: [
+                      { name: { contains: search, mode: 'insensitive' } },
+                      { email: { contains: search, mode: 'insensitive' } },
+                      { school: { contains: search, mode: 'insensitive' } },
+                    ]
+                  }
+                },
+                { dependents: { contains: search, mode: 'insensitive' } },
+                { householdIncome: { contains: search, mode: 'insensitive' } },
+                { circumstances: { contains: search, mode: 'insensitive' } },
+              ]
+            },
+            status && status !== 'ALL' ? { status } : {},
+          ]
+        },
+        include: {
+          application: {
+            select: {
+              name: true,
+              email: true,
+              school: true,
+              user: {
+                select: {
+                  profile: {
+                    select: {
+                      parentEmail: true
+                    }
                   }
                 }
               }
             }
           }
+        },
+        orderBy: {
+          submittedAt: 'desc'
         }
-      },
-      orderBy: {
-        submittedAt: 'desc'
-      }
-    })
+      }),
+      prisma.financialAidApplication.groupBy({
+        by: ['status'],
+        _count: true
+      })
+    ])
 
-    return NextResponse.json(applications)
+    // Format status counts
+    const statusCounts = {
+      PENDING: 0,
+      APPROVED: 0,
+      DENIED: 0,
+      ...Object.fromEntries(
+        counts.map(({ status, _count }) => [status, _count])
+      )
+    }
+
+    const stats = {
+      totalApplications: applications.length,
+      pendingApplications: statusCounts.PENDING,
+      approvedApplications: statusCounts.APPROVED,
+      deniedApplications: statusCounts.DENIED,
+      recentApplications: applications.slice(0, 5)
+    }
+
+    return NextResponse.json({
+      applications,
+      counts: statusCounts,
+      stats,
+      total: applications.length
+    })
   } catch (error) {
     console.error('Failed to fetch financial aid applications:', error)
     return NextResponse.json(
