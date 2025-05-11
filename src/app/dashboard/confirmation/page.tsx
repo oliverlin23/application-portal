@@ -198,27 +198,8 @@ export default function ProgramConfirmationPage() {
               <div className="space-y-2">
                 <h3 className="font-semibold text-lg">Where</h3>
                 <p className="text-sm text-muted-foreground">
-                  Linsly-Chittenden Hall<br />
-                  63 High St, New Haven, CT 06511<br />
-                  <span className="italic">Location subject to change</span>
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="font-semibold text-lg">Check-in & Check-out</h3>
-                <p className="text-sm text-muted-foreground">
-                  Room 102, Linsly-Chittenden Hall<br />
-                  Students must check in/out with an adult coach<br />
-                  Parent/guardian check-out not required unless specified
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="font-semibold text-lg">Materials & Meals</h3>
-                <p className="text-sm text-muted-foreground">
-                  <strong>Bring:</strong> Paper, pens, and water bottle<br />
-                  <strong>Provided:</strong> Catered lunch and light breakfast<br />
-                  Students may bring their own meals if preferred
+                  The 2025 Yale Summer Debate Program will be held online!<br />
+                  <span className="italic">Please check back for more information</span>
                 </p>
               </div>
             </div>
@@ -226,7 +207,7 @@ export default function ProgramConfirmationPage() {
             <div className="border-t pt-4">
               <h3 className="font-semibold text-lg mb-2">Payment Instructions</h3>
               <p className="text-sm text-muted-foreground">
-                Program fee: $599 (Financial aid available)<br />
+                Program fee: $295 (Financial aid available)<br />
                 Payment due: July 15th, 2024<br />
                 Method: PayPal invoice (PayPal account not required)<br />
                 For payment assistance or alternative methods, contact:<br />
@@ -243,7 +224,13 @@ export default function ProgramConfirmationPage() {
         <CardHeader>
           <CardTitle>Program Forms</CardTitle>
           <CardDescription>
-            Please review and download these important program documents.
+            Please review and download these important program documents. To confirm your spot in the program, you must acknowledge and agree to all of the following forms AND email signed copies to <a href="mailto:yalesummerdebateprogram@gmail.com" className="text-blue-600 hover:underline">yalesummerdebateprogram@gmail.com</a>. 
+
+          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+            <p className="text-sm text-yellow-800 font-medium">
+              ⚠️ Important: Your participation in the program is not confirmed until all forms have been signed and emailed to yalesummerdebateprogram@gmail.com.
+            </p>
+          </div>
           </CardDescription>
         </CardHeader>
       </Card>
