@@ -75,7 +75,6 @@ export async function sendPasswordResetEmail(email: string, token: string) {
               margin: 0 auto;
               font-family: Arial, sans-serif;
               line-height: 1.6;
-              color: #333333;
             }
             .header {
               background-color: #00356B;
@@ -426,6 +425,21 @@ export async function sendConfirmationEmail(
             font-family: Arial, sans-serif;
             line-height: 1.6;
           }
+          .callout {
+            background-color: #f8f9fa;
+            border-left: 4px solid #00356B;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+          }
+          .callout.warning {
+            background-color: #fff3cd;
+            border-left-color: #ffc107;
+          }
+          .callout.info {
+            background-color: #e7f5ff;
+            border-left-color: #0d6efd;
+          }
         </style>
       </head>
       <body>
@@ -433,6 +447,10 @@ export async function sendConfirmationEmail(
           <h1>Program Confirmation Received</h1>
           <p>Dear ${parentName},</p>
           <p>Thank you for confirming ${studentName}'s participation in the Yale Summer Debate Program. We have received your program confirmation form and all required consents.</p>
+          
+          <div class="callout warning">
+            <strong>Important:</strong> Please remember to email signed copies of all forms to yalesummerdebateprogram@gmail.com by July 15th, 2024. Do not reply to this email. Your participation in the program will not be confirmed until all forms have been signed and returned.
+          </div>
           
           <h2>Important Details Submitted:</h2>
           <ul>
@@ -443,9 +461,9 @@ export async function sendConfirmationEmail(
           
           ${formData.financialAidRequest ? '<p><strong>Note:</strong> Your request for financial aid has been recorded. Please complete the financial aid form on your dashboard, and we will contact you with your financial aid decision as soon as possible.</p>' : ''}
           
-          <p>Attached to this email, you'll find copies of all accepted forms for your records.</p>
+          <p>Attached to this email, you'll find copies of all accepted forms for your records. Please remember to sign and email these forms to <a href="mailto:yalesummerdebateprogram@gmail.com">yalesummerdebateprogram@gmail.com</a> by July 15th, 2024.</p>
           
-          <p>If you have any questions, please contact us at yalesummerdebateprogram@gmail.com.</p>
+          <p>If you have any questions, please contact us via email.</p>
           
           <p>Best regards,<br>Yale Summer Debate Program Team</p>
         </div>

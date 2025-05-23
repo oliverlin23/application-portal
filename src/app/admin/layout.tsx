@@ -31,6 +31,9 @@ export default async function AdminLayout({
           <Link href="/admin/applications" className="block p-2 hover:bg-gray-200 rounded">
             Applications
           </Link>
+          <Link href="/admin/financial-aid" className="block p-2 hover:bg-gray-200 rounded">
+            Financial Aid
+          </Link>
           <Link href="/admin/tools" className="block p-2 hover:bg-gray-200 rounded">
             Tools
           </Link>

@@ -47,7 +47,7 @@ export default function HomePage() {
               <CardTitle>Cost</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>$599 per student</p>
+              <p>$295 per student</p>
               <p className="text-sm text-green-600 mt-4">Financial aid available</p>
               <p className="text-sm">Free for New Haven Public School UDL participants</p>
             </CardContent>

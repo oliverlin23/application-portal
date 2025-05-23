@@ -29,13 +29,17 @@ const confirmationSchema = z.object({
   additionalNotes: z.string().optional().default(''),
 })
 
+async function validateSession() {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.id) {
+    throw new Error('Unauthorized')
+  }
+  return session
+}
+
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
+    const session = await validateSession()
     const data = await req.json()
     console.log('Received confirmation data:', data)
     const validatedData = confirmationSchema.parse(data)
@@ -101,6 +105,10 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('Confirmation error:', error instanceof Error ? error.message : 'Unknown error')
     
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
     if (error instanceof z.ZodError) {
       return NextResponse.json({
         error: error.errors[0].message
@@ -115,11 +123,8 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
+    const session = await validateSession()
+    
     const application = await prisma.application.findUnique({
       where: { userId: session.user.id },
       include: {
@@ -134,6 +139,11 @@ export async function GET() {
     return NextResponse.json(application.programConfirmation)
   } catch (error) {
     console.error('Confirmation fetch error:', error)
+    
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    
     return NextResponse.json(
       { error: 'Failed to fetch confirmation' },
       { status: 500 }
