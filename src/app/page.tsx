@@ -10,13 +10,11 @@ export default function HomePage() {
         
         
         <p className="text-lg mb-8">
-          Improve your public speaking and argumentation skills, learn about current events and national debates, 
-          and develop your critical thinking skills at the Yale Summer Debate Program (YSDP)! Learn from experienced Yale coaches 
-          and work closely with other high school debaters.
+          Improve your public speaking and argumentation skills, learn about current events and national debates, and have a lot of fun with the Yale Summer Debate Program (YSDP)! You will learn from Yale coaches and work closely with other high school debaters.
         </p>
 
         <p className="text-lg mb-4 text-center">
-          Applications for Summer 2025 are now open!
+          Applications for Summer 2026 are now open!
         </p>
 
         <div className="flex justify-center mb-8">
@@ -37,7 +35,7 @@ export default function HomePage() {
               <CardTitle>Program Timing</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>Monday, August 19 through Friday, August 23, 2025</p>
+              <p>Monday, August 24 through Friday, August 28, 2026</p>
               <p>Daily: 10:00 AM - 4:00 PM</p>
             </CardContent>
           </Card>
@@ -47,7 +45,7 @@ export default function HomePage() {
               <CardTitle>Cost</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>$295 per student</p>
+              <p>$599 per student</p>
               <p className="text-sm text-green-600 mt-4">Financial aid available</p>
               <p className="text-sm">Free for New Haven Public School UDL participants</p>
             </CardContent>
@@ -73,8 +71,8 @@ export default function HomePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <p className="font-semibold">Application Deadline: June 1, 2025</p>
-                <p className="text-red-600">Rolling admissions - Apply early!</p>
+                <p className="font-semibold">Application Deadline: June 1, 2026</p>
+                <p className="text-red-600">Rolling admissions — spots are filling up, so apply NOW!</p>
               </div>
             </CardContent>
           </Card>
