@@ -189,7 +189,7 @@ export default function ProgramConfirmationPage() {
               <div className="space-y-2">
                 <h3 className="font-semibold text-lg">When</h3>
                 <p className="text-sm text-muted-foreground">
-                  August 18th - August 22nd<br />
+                  August 24th - August 28th, 2026<br />
                   10:00 AM - 4:00 PM daily<br />
                   <span className="text-yellow-600">Please do not arrive more than 15 minutes early</span>
                 </p>
@@ -198,8 +198,7 @@ export default function ProgramConfirmationPage() {
               <div className="space-y-2">
                 <h3 className="font-semibold text-lg">Where</h3>
                 <p className="text-sm text-muted-foreground">
-                  The 2025 Yale Summer Debate Program will be held online!<br />
-                  <span className="italic">Please check back for more information</span>
+                  The 2026 Yale Summer Debate Program will be held in person in New Haven. Exact locations and room assignments will be provided via the Program Confirmation Form and email updates.
                 </p>
               </div>
             </div>
@@ -207,8 +206,8 @@ export default function ProgramConfirmationPage() {
             <div className="border-t pt-4">
               <h3 className="font-semibold text-lg mb-2">Payment Instructions</h3>
               <p className="text-sm text-muted-foreground">
-                Program fee: $295 (Financial aid available)<br />
-                Payment due: July 15th, 2024<br />
+                Program fee: $599 (Financial aid available)<br />
+                Payment due: July 15, 2026 (details and invoices will be sent after acceptance)<br />
                 Method: PayPal invoice (PayPal account not required)<br />
                 For payment assistance or alternative methods, contact:<br />
                 <a href="mailto:yalesummerdebateprogram@gmail.com" className="text-blue-600 hover:underline">
